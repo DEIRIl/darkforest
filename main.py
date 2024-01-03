@@ -8,14 +8,17 @@ w, h = screen.get_size()
 all_units = pygame.sprite.Group()
 floor = pygame.sprite.Group()
 objects = pygame.sprite.Group()
+thorns = pygame.sprite.Group()
 
 from classPlayer import Player
 from classMainFloor import MainFloor
 from classBlock import Block
+from classThorns import Thorns
 
 MainFloor((w, h), floor)
 Block(0.2 * w, 1, w, h, objects)
 Block(0.2 * w, 2, w, h, objects)
+Thorns(0.2 * w, 1, w, h, thorns)
 running = True
 player = Player(0.5 * w - 20, 0.5 * h - 20, 75, 5, all_units, (w, h), screen)
 clock = pygame.time.Clock()
@@ -25,11 +28,11 @@ fall = False
 screen_image = pygame.transform.scale(load_image("screen2.png"), (w, h))
 # FALL = pygame.USEREVENT + 1
 # pygame.time.set_timer(FALL, 1)
-while running:
+while player.running:
     screen.fill((50, 50, 50))
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False
+            player.running = False
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_d:
                 player.x1motoin = "y"
@@ -57,12 +60,15 @@ while running:
     if player.rect.x < 0.3 * w:
         player.rect = player.rect.move(-player.vx, 0)
         objects.update("r", player.v)
+        thorns.update("r", player.v)
     if player.rect.x + player.radius > 0.7 * w:
         player.rect = player.rect.move(-player.vx, 0)
         objects.update("l", player.v)
-    jump, fall = player.update(jump, fall, objects, floor)
+        thorns.update("l", player.v)
+    jump, fall = player.update(jump, fall, objects, thorns, floor)
     screen.blit(screen_image, (0, 0))
     objects.draw(screen)
+    thorns.draw(screen)
     floor.draw(screen)
     all_units.draw(screen)
     player.show_hp()
