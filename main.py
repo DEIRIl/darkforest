@@ -1,5 +1,7 @@
 import pygame
 
+from libraryImages import load_image
+
 pygame.init()
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 w, h = screen.get_size()
@@ -9,13 +11,18 @@ objects = pygame.sprite.Group()
 
 from classPlayer import Player
 from classMainFloor import MainFloor
-from classBranch import Branch
+from classBlock import Block
 
 MainFloor((w, h), floor)
-Branch(0.2 * w, 0.5 * h, 100, 50, objects)
+Block(0.2 * w, 1, w, h, objects)
+Block(0.2 * w, 2, w, h, objects)
 running = True
-player = Player(0.5 * w - 20, 0.5 * h - 20, 75, 5, all_units, (w, h))
+player = Player(0.5 * w - 20, 0.5 * h - 20, 75, 5, all_units, (w, h), screen)
 clock = pygame.time.Clock()
+jump = False
+f = False
+fall = False
+screen_image = pygame.transform.scale(load_image("screen2.png"), (w, h))
 # FALL = pygame.USEREVENT + 1
 # pygame.time.set_timer(FALL, 1)
 while running:
@@ -28,39 +35,37 @@ while running:
                 player.x1motoin = "y"
             if event.key == pygame.K_a:
                 player.x2motoin = "y"
-            if (event.key == pygame.K_w or event.key == pygame.K_SPACE):
-                player.jump = True
-            if event.mod & pygame.KMOD_SHIFT:
-                player.v += 5
+            if (event.key == pygame.K_w or event.key == pygame.K_SPACE) and not jump and not f and not fall and player.jump_count == 0:
+                jump = True
+                player.jump_count = player.jump_max
+            if event.key == pygame.K_LSHIFT:
+                player.v *= 2
+            if event.key == pygame.K_s:
+                f = True
+            if event.key == pygame.K_SPACE and f:
+                fall = True
+                player.jump_count = -player.jump_max
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_d:
                 player.x1motoin = "n"
             if event.key == pygame.K_a:
                 player.x2motoin = "n"
-            if event.mod & pygame.KMOD_SHIFT:
-                player.v -= 5
-                print("player")
-            # if (event.key == pygame.K_w or event.key == pygame.K_SPACE):
-            #     player.vy = player.vd
-    #     if event.type == FALL:
-    #         if player.y < 0.8 * h - player.radius:
-    #             player.y += 1
+            if event.key == pygame.K_LSHIFT:
+                player.v /= 2
+            if event.key == pygame.K_s:
+                f = False
     if player.rect.x < 0.3 * w:
         player.rect = player.rect.move(-player.vx, 0)
         objects.update("r", player.v)
     if player.rect.x + player.radius > 0.7 * w:
         player.rect = player.rect.move(-player.vx, 0)
         objects.update("l", player.v)
-    # if player.rect.y < 0.9 * h:
-    #     player.vy = 0
-    # board.render(screen)
-    # pygame.draw.rect(screen, "white", (0, 0.8 * h, w, 0.2 * h))
-    # pygame.draw.circle(screen, "red", (circle.x, circle.y), circle.radius)
-    # pygame.draw.rect(screen, "green", (0.3 * w, 0.3 * h, 0.4 * w, 0.6 * h), 2)
-    all_units.update(objects, floor)
+    jump, fall = player.update(jump, fall, objects, floor)
+    screen.blit(screen_image, (0, 0))
     objects.draw(screen)
     floor.draw(screen)
     all_units.draw(screen)
+    player.show_hp()
     clock.tick(120)
     pygame.display.flip()
 pygame.quit()
