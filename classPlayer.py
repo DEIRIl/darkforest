@@ -4,20 +4,20 @@ from libraryImages import load_image
 
 
 class Player(pygame.sprite.Sprite):
-    image1 = load_image("player2.png", -1)
+    image1 = load_image("player3.png", -1)
     image2 = pygame.transform.flip(image1, True, False)
 
-    def __init__(self, x, y, radius, speed, all_sprites, size, screen):
+    def __init__(self, x, y, all_sprites, size, screen):
         super().__init__(all_sprites)
-        self.radius = radius
-        self.image = pygame.transform.scale(Player.image1, (radius, 1.5 * radius))
+        self.radius = radius = 75
+        self.image = pygame.transform.scale(Player.image1, (radius, 2.25 * radius))
         self.rect = self.image.get_rect().move(x, y)
         self.mask = pygame.mask.from_surface(self.image)
         self.x1motoin = "n"
         self.x2motoin = "n"
         self.vx = 0
-        self.vy = speed
-        self.v = speed
+        self.vy = 5
+        self.v = 5
         self.x = x
         self.y = y
         self.screen_size = size
@@ -27,33 +27,41 @@ class Player(pygame.sprite.Sprite):
         self.hp = 100
         self.sc = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
         self.screen = screen
+        self.running = True
 
     def show_hp(self):
-        pygame.draw.rect(self.sc, "grey", (28, self.screen_size[1] - 77, 304, 34))
-        pygame.draw.rect(self.sc, "green", (30, self.screen_size[1] - 75, 3 * self.hp, 30))
-        pygame.draw.rect(self.sc, "red", (30 + 3 * self.hp, self.screen_size[1] - 75, 3 * (self.max_hp - self.hp), 30))
+        pygame.draw.rect(self.sc, "grey", (
+            0.0145 * self.screen_size[0], self.screen_size[1] - 0.0712 * self.screen_size[1],
+            0.15835 * self.screen_size[0],
+            0.0315 * self.screen_size[1]))
+        pygame.draw.rect(self.sc, "green", (
+        0.0152 * self.screen_size[0], self.screen_size[1] - 0.06929 * self.screen_size[1], 3 * self.hp,
+        0.015625 * self.screen_size[0]))
+        pygame.draw.rect(self.sc, "red", (
+            0.0152 * self.screen_size[0] + 3 * self.hp, self.screen_size[1] - 0.06929 * self.screen_size[1],
+            3 * (self.max_hp - self.hp), 0.015625 * self.screen_size[0]))
         self.screen.blit(self.sc, (0, 0))
 
     def death(self):
-        pass
+        self.running = False
 
-
-    def update(self, jump, fall, objects, floor):
+    def upd(self, jump, fall, objects, thorns, floor):
+        a = False
         if self.x1motoin == "y" and self.x2motoin == "y":
             self.vx = 0
         elif self.x1motoin == "y":
             self.vx = self.v
-            self.image = pygame.transform.scale(Player.image1, (self.radius, 1.5 * self.radius))
+            self.image = pygame.transform.scale(Player.image1, (self.radius, 2.25 * self.radius))
         elif self.x2motoin == "y":
             self.vx = -self.v
-            self.image = pygame.transform.scale(Player.image2, (self.radius, 1.5 * self.radius))
+            self.image = pygame.transform.scale(Player.image2, (self.radius, 2.25 * self.radius))
         else:
             self.vx = 0
         if jump:
             self.vy = -self.jump_count
             if self.jump_count > 0 and not pygame.sprite.spritecollideany(self,
                                                                           floor) and not pygame.sprite.spritecollideany(
-                    self, objects):
+                self, objects):
                 self.jump_count -= 1
             elif not pygame.sprite.spritecollideany(self, floor) and not pygame.sprite.spritecollideany(self, objects):
                 jump = False
@@ -80,8 +88,15 @@ class Player(pygame.sprite.Sprite):
             if pygame.sprite.spritecollideany(self, floor) or pygame.sprite.spritecollideany(self, objects):
                 self.vy = 0
                 self.jump_count = 0
-        self.rect = self.rect.move(self.vx, self.vy)
-        # print(jump, fall, self.jump_count)
+        if pygame.sprite.spritecollideany(self, thorns):
+            if self.x1motoin == "y":
+                self.rect = self.rect.move(-self.v * 15, 0)
+            if self.x2motoin == "y":
+                self.rect = self.rect.move(self.v * 15, 0)
+            self.hp -= 10
+            a = True
+        if not a:
+            self.rect = self.rect.move(self.vx, self.vy)
         if self.hp == 0:
             self.death()
         return (jump, fall)
