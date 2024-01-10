@@ -17,7 +17,7 @@ from classMainFloor import MainFloor
 from classBlock import Block
 from classThorns import Thorns
 
-run= True
+run = True
 while run:
     screen_start.fill("white")
     for event in pygame.event.get():
@@ -29,15 +29,15 @@ while run:
 MainFloor((w, h), floor)
 Block(0.2 * w, 1, w, h, objects)
 Block(0.2 * w, 2, w, h, objects)
-Thorns(0.2 * w, 1, w, h, thorns)
+Thorns(0.7 * w, 1, w, h, thorns)
 player = Player(0.5 * w, 0.8 * h, all_units, (w, h), screen)
-Enemy(0.8 * w, 0.7 * h, all_units)
+Enemy(0.8 * w, 0.7 * h, all_units, (w, h))
 clock = pygame.time.Clock()
 jump = False
 f = False
 fall = False
 motion = ""
-screen_image = pygame.transform.scale(load_image("screen2.png"), (w, h))
+screen_image = pygame.transform.scale(load_image("screen.jpg"), (w, h))
 
 running = True
 while running:

@@ -3,11 +3,12 @@ import pygame
 from libraryImages import load_image
 
 class Enemy(pygame.sprite.Sprite):
-    image = load_image("enemy.png")
+    image = load_image("player41.png")
 
-    def __init__(self, x, y, group):
+    def __init__(self, x, y, group, size):
         super().__init__(group)
-        self.image = pygame.transform.scale(Enemy.image, (100, 150))
+        self.radius = radius = 0.07 * size[1]
+        self.image = pygame.transform.scale(Enemy.image, (radius, 2.1 * radius))
         self.rect = self.image.get_rect().move(x, y)
         self.mask = pygame.mask.from_surface(self.image)
         self.vx = 0

@@ -4,13 +4,13 @@ from libraryImages import load_image
 
 
 class Player(pygame.sprite.Sprite):
-    image1 = load_image("player3.png", -1)
+    image1 = load_image("player31.png", -1)
     image2 = pygame.transform.flip(image1, True, False)
 
     def __init__(self, x, y, all_sprites, size, screen):
         super().__init__(all_sprites)
-        self.radius = radius = 75
-        self.image = pygame.transform.scale(Player.image1, (radius, 2.25 * radius))
+        self.radius = radius = 0.07 * size[1]
+        self.image = pygame.transform.scale(Player.image1, (radius, 2.1 * radius))
         self.rect = self.image.get_rect().move(x, y)
         self.mask = pygame.mask.from_surface(self.image)
         self.x1motoin = "n"
@@ -30,20 +30,21 @@ class Player(pygame.sprite.Sprite):
         self.running = True
 
     def show_hp(self):
-        pygame.draw.rect(self.sc, "grey", (
-            0.0145 * self.screen_size[0], self.screen_size[1] - 0.0712 * self.screen_size[1],
-            0.15835 * self.screen_size[0],
-            0.0315 * self.screen_size[1]))
-        pygame.draw.rect(self.sc, "green", (
+        # pygame.draw.rect(self.sc, "gray", (
+        #     0.0145 * self.screen_size[0], self.screen_size[1] - 0.0712 * self.screen_size[1],
+        #     0.15835 * self.screen_size[0],
+        #     0.0315 * self.screen_size[1]))
+        pygame.draw.rect(self.sc, "red", (
         0.0152 * self.screen_size[0], self.screen_size[1] - 0.06929 * self.screen_size[1], 3 * self.hp,
         0.015625 * self.screen_size[0]))
-        pygame.draw.rect(self.sc, "red", (
+        pygame.draw.rect(self.sc, "black", (
             0.0152 * self.screen_size[0] + 3 * self.hp, self.screen_size[1] - 0.06929 * self.screen_size[1],
             3 * (self.max_hp - self.hp), 0.015625 * self.screen_size[0]))
         self.screen.blit(self.sc, (0, 0))
 
     def death(self):
-        self.running = False
+        pass
+        # self.running = False
 
     def upd(self, jump, fall, objects, thorns, floor):
         a = False
@@ -51,10 +52,10 @@ class Player(pygame.sprite.Sprite):
             self.vx = 0
         elif self.x1motoin == "y":
             self.vx = self.v
-            self.image = pygame.transform.scale(Player.image1, (self.radius, 2.25 * self.radius))
+            self.image = pygame.transform.scale(Player.image1, (self.radius, 2.1 * self.radius))
         elif self.x2motoin == "y":
             self.vx = -self.v
-            self.image = pygame.transform.scale(Player.image2, (self.radius, 2.25 * self.radius))
+            self.image = pygame.transform.scale(Player.image2, (self.radius, 2.1 * self.radius))
         else:
             self.vx = 0
         if jump:
@@ -89,10 +90,24 @@ class Player(pygame.sprite.Sprite):
                 self.vy = 0
                 self.jump_count = 0
         if pygame.sprite.spritecollideany(self, thorns):
-            if self.x1motoin == "y":
-                self.rect = self.rect.move(-self.v * 15, 0)
-            if self.x2motoin == "y":
-                self.rect = self.rect.move(self.v * 15, 0)
+            for thorn in thorns:
+                if self.rect.colliderect(thorn.rect):
+                    if thorn.rect.x + thorn.rect.w // 2 <= self.rect.x + self.rect.w // 2:
+                        self.rect.x += 50
+                        self.rect.y -= 40
+                        self.vx = 0
+                    else:
+                        self.rect.x -= 50
+                        self.rect.y -= 40
+                        self.vx = 0
+        #     if self.x1motoin == "y":
+        #         self.rect = self.rect.move(-self.v * 23, -self.v * 5)
+        #     if self.x2motoin == "y":
+        #         self.rect = self.rect.move(self.v * 23, -self.v * 5)
+        #     if self.x1motoin != "y" and self.x2motoin != "y":
+        #         self.rect = self.rect.move(-self.v * 23, -self.v * 5)
+            # if fall:
+            #     self.rect = self.rect.move(self.v * 15, 0)
             self.hp -= 10
             a = True
         if not a:
