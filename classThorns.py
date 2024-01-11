@@ -3,11 +3,11 @@ import pygame
 from libraryImages import load_image
 
 class Thorns(pygame.sprite.Sprite):
-    image = load_image('thorns.png')
+    image = load_image('thorns2.png')
     def __init__(self, x, coord, w, h, group):
         super().__init__(group)
-        coords = {1: 0.86 * h, 2: 0.46 * h}
-        self.image = pygame.transform.scale(Thorns.image, (0.03 * w, 0.04 * h))
+        coords = {1: 0.83 * h, 2: 0.46 * h}
+        self.image = pygame.transform.scale(Thorns.image, (0.07 * w, 0.08 * h))
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect().move(x, coords[coord])
 
