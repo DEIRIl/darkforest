@@ -2,8 +2,10 @@ import pygame
 
 from libraryImages import load_image
 
+
 class Thorns(pygame.sprite.Sprite):
     image = load_image('thorns2.png')
+
     def __init__(self, x, coord, w, h, group):
         super().__init__(group)
         coords = {1: 0.83 * h, 2: 0.46 * h}

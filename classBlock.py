@@ -2,9 +2,11 @@ import pygame
 
 from libraryImages import load_image
 
+
 class Block(pygame.sprite.Sprite):
-    image = load_image('block2.png')
-    def __init__(self,x, coord, w, h, group):
+    image = load_image('block3.png')
+
+    def __init__(self, x, coord, w, h, group):
         super().__init__(group)
         coords = {1: 0.6 * h, 2: 0.25 * h}
         self.image = pygame.transform.scale(Block.image, (0.15 * w, 0.08 * h))

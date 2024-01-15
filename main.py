@@ -6,16 +6,21 @@ pygame.init()
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 w, h = screen.get_size()
 screen = pygame.display.set_mode((0.5 * w, 0.5 * h))
+
 all_units = pygame.sprite.Group()
+all_enemy = pygame.sprite.Group()
 floor = pygame.sprite.Group()
 objects = pygame.sprite.Group()
 thorns = pygame.sprite.Group()
+bullets = pygame.sprite.Group()
+heals = pygame.sprite.Group()
 
 from classPlayer import Player
-from classEnemy import Enemy
+from classEnemy import StandartEnemy, NoBulletEnemy, NoMovementEnemy
 from classMainFloor import MainFloor
 from classBlock import Block
 from classThorns import Thorns
+from classHeal import LittleHeal, BigHeal
 
 run = True
 while run:
@@ -40,6 +45,14 @@ level = 0
 x = 0
 the_first_download = False
 
+# StandartEnemy(0.5 * w, 0.3 * h, all_enemy, (w, h))
+# NoBulletEnemy(0.5 * w, 0.3 * h, all_enemy, (w, h))
+NoMovementEnemy(0.7 * w, 0.7 * h, all_enemy, (w, h))
+Block(0.5 * w, 1, w, h, objects)
+Block(0.55 * w, 1, w, h, objects)
+Block(0.6 * w, 1, w, h, objects)
+Block(0.65 * w, 1, w, h, objects)
+BigHeal(0.7 * w, 0.8 * h, w, h, heals)
 
 def training_level():
     global the_first_download
@@ -77,6 +90,15 @@ while running:
                 player.rect.y = 0.8 * h
                 player.hp = player.max_hp
                 x = 0
+                for it in bullets:
+                    it.kill()
+                bullets.clear(screen, pygame.Surface((w, h)))
+                for it in heals:
+                    it.kill()
+                heals.clear(screen, pygame.Surface((w, h)))
+                for it in all_enemy:
+                    it.kill()
+                all_enemy.clear(screen, pygame.Surface((w, h)))
                 for it in objects:
                     it.kill()
                 objects.clear(screen, pygame.Surface((w, h)))
@@ -112,17 +134,19 @@ while running:
             player.rect = player.rect.move(-player.vx, 0)
             objects.update("r", player.v)
             thorns.update("r", player.v)
+            heals.update("r", player.v)
             motion = "r"
             x += player.v
         elif player.rect.x + player.radius > 0.65 * w:
             player.rect = player.rect.move(-player.vx, 0)
             objects.update("l", player.v)
             thorns.update("l", player.v)
+            heals.update("l", player.v)
             motion = "l"
             x -= player.v
         else:
             motion = ""
-        jump, fall = player.upd(jump, fall, objects, thorns, floor)
+        jump, fall = player.upd(jump, fall, objects, thorns, floor, bullets, heals)
         screen.blit(screen_image, (0, 0))
         if level == 0:
             screen.fill((50, 50, 50))
@@ -130,8 +154,12 @@ while running:
         # screen.blit(screen2, (0, 0))
         objects.draw(screen)
         thorns.draw(screen)
+        bullets.update(motion, player.v)
+        bullets.draw(screen)
+        heals.draw(screen)
         floor.draw(screen)
-        all_units.update(floor, objects, motion)
+        all_enemy.update(floor, objects, motion, player, bullets)
+        all_enemy.draw(screen)
         all_units.draw(screen)
         player.show_hp()
         clock.tick(120)
