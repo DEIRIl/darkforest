@@ -16,5 +16,5 @@ class Thorns(pygame.sprite.Sprite):
     def update(self, motion, speed):
         if motion == "r":
             self.rect = self.rect.move(speed, 0)
-        else:
+        elif motion == "l":
             self.rect = self.rect.move(-speed, 0)

@@ -169,4 +169,5 @@ class Player(pygame.sprite.Sprite):
             self.rect = self.rect.move(self.vx, self.vy)
         if self.hp <= 0:
             self.death()
+            self.hp = 100
         return (jump, fall)

@@ -21,6 +21,8 @@ from classMainFloor import MainFloor
 from classBlock import Block
 from classThorns import Thorns
 from classHeal import LittleHeal, BigHeal
+from Levels import training_level
+from classButton import Button
 
 run = True
 while run:
@@ -45,40 +47,10 @@ level = 0
 x = 0
 the_first_download = False
 
-# StandartEnemy(0.5 * w, 0.3 * h, all_enemy, (w, h))
-# NoBulletEnemy(0.5 * w, 0.3 * h, all_enemy, (w, h))
-NoMovementEnemy(0.7 * w, 0.7 * h, all_enemy, (w, h))
-Block(0.5 * w, 1, w, h, objects)
-Block(0.55 * w, 1, w, h, objects)
-Block(0.6 * w, 1, w, h, objects)
-Block(0.65 * w, 1, w, h, objects)
-BigHeal(0.7 * w, 0.8 * h, w, h, heals)
-
-def training_level():
-    global the_first_download
-    font = pygame.font.Font(None, 50)
-    text = font.render("Для движения нажмите и удерживайте клавиши 'A' или 'D'", True, "white")
-    text2 = font.render("Для прыжка нажмите 'W' или 'SPACE'", True, "white")
-    text3 = font.render("Вы можете запрыгнуть на платформу", True, "white")
-    text4 = font.render("Находясь на платформе вы можете нажать одновременно 'S' и 'SPACE' чтобы спрыгнуть с платформы", True, "white")
-    text5 = font.render("Чтобы ускориться зажмите 'SHIFT'", True, "white")
-    text6 = font.render("Совет вам, игрок, не натыкайтесь на шипы, а то будет бобо...", True, "white")
-    screen.blit(text, (0.3 * w + x, 0.4 * h))
-    screen.blit(text2, (1.3 * w + x, 0.4 * h))
-    screen.blit(text3, (2.3 * w + x, 0.4 * h))
-    screen.blit(text4, (3.3 * w + x, 0.4 * h))
-    screen.blit(text5, (4.5 * w + x, 0.4 * h))
-    screen.blit(text6, (6 * w + x, 0.4 * h))
-    if not the_first_download:
-        the_first_download = True
-        Block(2.5 * w + x, 1, w, h, objects)
-        Block(3.7 * w + x, 1, w, h, objects)
-        Block(3.7 * w + x, 2, w, h, objects)
-        Thorns(6.3 * w + x, 1, w, h, thorns)
-
 
 running = True
 while running:
+    next_level = False
     screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
     screen.fill((50, 50, 50))
     player.running = True
@@ -86,9 +58,10 @@ while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 player.running = False
+                player.vx = 0
+                player.v = 10
                 player.rect.x = 0.5 * w
                 player.rect.y = 0.8 * h
-                player.hp = player.max_hp
                 x = 0
                 for it in bullets:
                     it.kill()
@@ -130,19 +103,13 @@ while running:
                     player.v /= 2
                 if event.key == pygame.K_s:
                     f = False
-        if player.rect.x < 0.35 * w:
-            player.rect = player.rect.move(-player.vx, 0)
-            objects.update("r", player.v)
-            thorns.update("r", player.v)
-            heals.update("r", player.v)
+        if player.rect.x < 0.45 * w:
             motion = "r"
+            player.rect = player.rect.move(player.v, 0)
             x += player.v
-        elif player.rect.x + player.radius > 0.65 * w:
-            player.rect = player.rect.move(-player.vx, 0)
-            objects.update("l", player.v)
-            thorns.update("l", player.v)
-            heals.update("l", player.v)
+        elif player.rect.x + player.radius > 0.55 * w:
             motion = "l"
+            player.rect = player.rect.move(-player.v, 0)
             x -= player.v
         else:
             motion = ""
@@ -150,11 +117,16 @@ while running:
         screen.blit(screen_image, (0, 0))
         if level == 0:
             screen.fill((50, 50, 50))
-            training_level()
+            level_passed = training_level(screen, w, h, x, objects, thorns, all_enemy, heals, player)
+            if level_passed:
+                next_level = True
         # screen.blit(screen2, (0, 0))
         objects.draw(screen)
         thorns.draw(screen)
         bullets.update(motion, player.v)
+        objects.update(motion, player.v)
+        thorns.update(motion, player.v)
+        heals.update(motion, player.v)
         bullets.draw(screen)
         heals.draw(screen)
         floor.draw(screen)

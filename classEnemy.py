@@ -39,11 +39,10 @@ class StandartEnemy(pygame.sprite.Sprite):
                         Arrow(self.rect.x, self.rect.y, *self.size, bullets, -15)
                 else:
                     self.Ttime += 1
-                self.vy = 0
             else:
                 self.Ttime = 200
-                self.vy = 0
                 self.rect.x += self.vx
+            self.vy = 0
         else:
             if ((self.rect.x - player.rect.x) ** 2 + (self.rect.y - player.rect.y) ** 2) ** 0.5 <= 0.3 * self.size[0]:
                 if self.Ttime >= 200:
@@ -145,10 +144,9 @@ class NoMovementEnemy(StandartEnemy):
                     Branch(self.rect.x, self.rect.y, *self.size, bullets, (player.rect.x, player.rect.y))
                 else:
                     self.Ttime += 1
-                self.vy = 0
             else:
                 self.Ttime = 200
-                self.vy = 0
+            self.vy = 0
         # else:
         #     if ((self.rect.x - player.x) ** 2 + (self.rect.y - player.y) ** 2) ** 0.5 <= 0.2 * self.size[0]:
         #         if self.Ttime >= 200:
