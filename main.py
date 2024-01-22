@@ -35,7 +35,7 @@ while run:
     pygame.display.flip()
 
 MainFloor((w, h), floor)
-player = Player(0.5 * w, 0.8 * h, all_units, (w, h), screen)
+player = Player(0.5 * w, 0.7 * h, all_units, (w, h), screen)
 clock = pygame.time.Clock()
 jump = False
 f = False

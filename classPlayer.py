@@ -4,19 +4,17 @@ from libraryImages import load_image
 
 
 class Player(pygame.sprite.Sprite):
-    image = pygame.transform.scale(load_image("Idle.png"), (1500, 200))
-    image1 = pygame.transform.scale(load_image("Jump.png"), (2750, 200))
-    image2 = pygame.transform.scale(load_image("Run.png"), (2000, 200))
-
     def __init__(self, x, y, all_sprites, size, screen):
         super().__init__(all_sprites)
-
+        image = pygame.transform.scale(load_image("Idle.png"), (1.2 * size[1], 0.2 * size[1]))
+        image1 = pygame.transform.scale(load_image("Jump.png"), (2.2 * size[1], 0.2 * size[1]))
+        image2 = pygame.transform.scale(load_image("Run.png"), (1.6 * size[1], 0.2 * size[1]))
         self.frames = []
         self.frame_tick = 20
         self.frame_tick_idle = 0
-        self.cut_sheet(Player.image, 6, 1)
-        self.cut_sheet(Player.image1, 11, 1)
-        self.cut_sheet(Player.image2, 8, 1)
+        self.cut_sheet(image, 6, 1)
+        self.cut_sheet(image1, 11, 1)
+        self.cut_sheet(image2, 8, 1)
         self.cur_frame = 0
         self.image = self.frames[self.cur_frame]
         self.cur_frame_idle = 1
