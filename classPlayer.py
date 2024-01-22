@@ -151,7 +151,7 @@ class Player(pygame.sprite.Sprite):
                 #         self.rect = self.rect.move(-self.v * 23, -self.v * 5)
                 # if fall:
                 #     self.rect = self.rect.move(self.v * 15, 0)
-                self.hp -= 10
+                self.hp -= 5
                 a = True
         if pygame.sprite.spritecollideany(self, bullets):
             for bullet in bullets:
