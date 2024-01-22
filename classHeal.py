@@ -26,3 +26,4 @@ class BigHeal(LittleHeal):
     def __init__(self, x, y, w, h, group):
         super().__init__(x, y, w, h, group, BigHeal.image)
         self.plus_hp = 50
+

@@ -15,6 +15,7 @@ class Block(pygame.sprite.Sprite):
         self.rect.h = 1
          # self.rect = pygame.Rect((x, coords[coord]), (0.1 * w, 1))
 
+
     def update(self, motion, speed):
         if motion == "r":
             self.rect = self.rect.move(speed, 0)

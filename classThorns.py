@@ -18,3 +18,4 @@ class Thorns(pygame.sprite.Sprite):
             self.rect = self.rect.move(speed, 0)
         elif motion == "l":
             self.rect = self.rect.move(-speed, 0)
+

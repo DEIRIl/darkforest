@@ -10,6 +10,7 @@ class Player(pygame.sprite.Sprite):
 
     def __init__(self, x, y, all_sprites, size, screen):
         super().__init__(all_sprites)
+
         self.frames = []
         self.frame_tick = 20
         self.frame_tick_idle = 0

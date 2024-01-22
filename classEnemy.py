@@ -147,10 +147,3 @@ class NoMovementEnemy(StandartEnemy):
             else:
                 self.Ttime = 200
             self.vy = 0
-        # else:
-        #     if ((self.rect.x - player.x) ** 2 + (self.rect.y - player.y) ** 2) ** 0.5 <= 0.2 * self.size[0]:
-        #         if self.Ttime >= 200:
-        #             self.Ttime = 0
-        #             Branch(self.rect.x, self.rect.y, *self.size, bullets, (player.rect.x, player.rect.y))
-        #         else:
-        #             self.Ttime += 1

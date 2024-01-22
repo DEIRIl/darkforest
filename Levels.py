@@ -54,5 +54,6 @@ def training_level(screen, w, h, x, objects, thorns, all_enemy, heals, player):
     return fin.x < player.x
 
 
+
 the_first_download = False
 fin = None
