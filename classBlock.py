@@ -11,10 +11,9 @@ class Block(pygame.sprite.Sprite):
         coords = {1: 0.6 * h, 2: 0.25 * h}
         self.image = pygame.transform.scale(Block.image, (0.15 * w, 0.08 * h))
         self.mask = pygame.mask.from_surface(self.image)
-        self.rect = self.image.get_rect().move(x, coords[coord])
-        self.rect.h = 1
-         # self.rect = pygame.Rect((x, coords[coord]), (0.1 * w, 1))
-
+        # self.rect = self.image.get_rect().move(x, coords[coord])
+        # self.rect.h = 1
+        self.rect = pygame.Rect((x, coords[coord]), (0.1 * w, 1))
 
     def update(self, motion, speed):
         if motion == "r":

@@ -46,7 +46,7 @@ def training_level(screen, w, h, x, objects, thorns, all_enemy, heals, player):
         Block(10.2 * w + x, 1, w, h, objects)
         NoBulletEnemy(10.3 * w + x, 0.5 * h, all_enemy, (w, h))
         NoMovementEnemy(11.3 * w + x, 0.775 * h, all_enemy, (w, h))
-        LittleHeal(12.3 * w + x, 0.8 * h, w, h, heals)
+        LittleHeal(12.3 * w + x, 0.82 * h, w, h, heals)
         BigHeal(12.4 * w + x, 0.8 * h, w, h, heals)
         fin = pygame.Rect(13.8 * w + x, 0, 0.1 * w, h)
     if the_first_download:
