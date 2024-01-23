@@ -14,9 +14,12 @@ floor = pygame.sprite.Group()
 objects = pygame.sprite.Group()
 thorns = pygame.sprite.Group()
 bullets = pygame.sprite.Group()
+player_bullets = pygame.sprite.Group()
 heals = pygame.sprite.Group()
+books = pygame.sprite.Group()
 
 from classPlayer import Player
+from classBullet import Flame
 from classEnemy import StandartEnemy, NoBulletEnemy, NoMovementEnemy
 from classMainFloor import MainFloor
 from classBlock import Block
@@ -100,6 +103,7 @@ motion = ""
 screen_image = pygame.transform.scale(load_image("screen.jpg"), (w, h))
 screen_finish_image = pygame.transform.scale(load_image("screen_finish.jpg"), (0.5 * w, 0.5 * h))
 x = 0
+player_attack = False
 the_first_download = False
 
 
@@ -158,6 +162,8 @@ while running:
                     player.v /= 2
                 if event.key == pygame.K_s:
                     f = False
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                player_attack = True
         if player.rect.x < 0.45 * w:
             motion = "r"
             player.rect = player.rect.move(player.v, 0)
@@ -168,24 +174,29 @@ while running:
             x -= player.v
         else:
             motion = ""
-        jump, fall = player.upd(jump, fall, objects, thorns, floor, bullets, heals)
+        jump, fall, player_attack = player.upd(jump, fall, objects, thorns, floor, bullets, heals, player_attack, all_enemy, player_bullets)
+        # print(player_attack)
         screen.blit(screen_image, (0, 0))
         if level == 0:
             screen.fill((50, 50, 50))
-            level_passed = training_level(screen, w, h, x, objects, thorns, all_enemy, heals, player)
+            level_passed = training_level(screen, w, h, x, objects, thorns, all_enemy, heals, player, books, the_first_download)
+            the_first_download = True
             if level_passed:
                 next_level = True
         # screen.blit(screen2, (0, 0))
         objects.draw(screen)
         thorns.draw(screen)
         bullets.update(motion, player.v)
+        player_bullets.update(motion, player.v)
         objects.update(motion, player.v)
         thorns.update(motion, player.v)
         heals.update(motion, player.v)
         bullets.draw(screen)
+        player_bullets.draw(screen)
         heals.draw(screen)
         floor.draw(screen)
-        all_enemy.update(floor, objects, motion, player, bullets)
+        books.draw(screen)
+        all_enemy.update(floor, objects, motion, player, bullets, player_bullets)
         all_enemy.draw(screen)
         all_units.draw(screen)
         player.show_hp()

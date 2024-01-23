@@ -1,12 +1,14 @@
 import pygame
 
 from libraryImages import load_image
+from classBullet import Flame
 
 
 class Player(pygame.sprite.Sprite):
-    image = pygame.transform.scale(load_image("Idle.png"), (1500, 200))
-    image1 = pygame.transform.scale(load_image("Jump.png"), (2750, 200))
-    image2 = pygame.transform.scale(load_image("Run.png"), (2000, 200))
+    image = pygame.transform.scale(load_image("Idle.png"), (600, 150))
+    image1 = pygame.transform.scale(load_image("Jump.png"), (1100, 150))
+    image2 = pygame.transform.scale(load_image("Run.png"), (800, 150))
+    attack_image = pygame.transform.scale(load_image("Attack_3.png"), (1792, 150))
 
     def __init__(self, x, y, all_sprites, size, screen):
         super().__init__(all_sprites)
@@ -16,6 +18,7 @@ class Player(pygame.sprite.Sprite):
         self.cut_sheet(Player.image, 6, 1)
         self.cut_sheet(Player.image1, 11, 1)
         self.cut_sheet(Player.image2, 8, 1)
+        self.cut_sheet(Player.attack_image, 7, 1)
         self.cur_frame = 0
         self.image = self.frames[self.cur_frame]
         self.cur_frame_idle = 1
@@ -37,6 +40,11 @@ class Player(pygame.sprite.Sprite):
         self.sc = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
         self.screen = screen
         self.running = True
+        self.attack = 12
+        self.attack_time = 5
+        self.curr_attack_frame = 0
+        self.leftdv = False
+        self.one_damage = False
 
     def cut_sheet(self, sheet, columns, rows):
         self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
@@ -63,30 +71,55 @@ class Player(pygame.sprite.Sprite):
     def death(self):
         self.running = False
 
-    def upd(self, jump, fall, objects, thorns, floor, bullets, heals):
+    def upd(self, jump, fall, objects, thorns, floor, bullets, heals, attack, enemys, player_bullets):
         a = False
-        if self.x1motoin == "y" and self.x2motoin == "y":
+        if attack:
+            self.vx = 0
+            if self.attack_time % 5 == 0:
+                self.attack_time += 1
+                self.cur_frame = (self.cur_frame + 1) % 7
+                if self.leftdv and self.attack_time <= 2:
+                    self.rect.x += 106
+                self.image = pygame.transform.flip(self.frames[self.cur_frame + 25], self.leftdv, False)
+            elif self.attack_time < 35:
+                self.attack_time += 1
+            else:
+                Flame(self.rect.x + self.rect.w // 2, self.rect.y + self.rect.h // 2, *self.screen_size, player_bullets, self.attack, self.leftdv)
+                self.attack_time = 0
+                attack = False
+                self.one_damage = False
+            if pygame.sprite.spritecollideany(self, enemys) and not self.one_damage:
+                self.one_damage = True
+                for enemy in enemys:
+                    if self.rect.colliderect(enemy):
+                        print(enemy.hp)
+                        enemy.hp -= self.attack
+                        if enemy.hp <= 0:
+                            enemy.kill()
+        elif self.x1motoin == "y" and self.x2motoin == "y":
             self.vx = 0
         elif self.x1motoin == "y":
+            self.leftdv = False
             self.frame_tick_idle = 10
             self.frame_tick += 1
             self.vx = self.v
             if self.frame_tick >= 10:
                 if not jump:
                     self.cur_frame = (self.cur_frame + 1) % 8
-                    self.image = self.frames[self.cur_frame + 14]
+                    self.image = self.frames[self.cur_frame + 17]
                 else:
                     self.cur_frame = (self.cur_frame + 1) % 11
                     self.image = self.frames[self.cur_frame + 6]
                 self.frame_tick = 0
         elif self.x2motoin == "y":
+            self.leftdv = True
             self.frame_tick_idle = 10
             self.frame_tick += 1
             self.vx = -self.v
             if self.frame_tick >= 10:
                 if not jump:
                     self.cur_frame = (self.cur_frame + 1) % 8
-                    self.image = pygame.transform.flip(self.frames[self.cur_frame + 14], True, False)
+                    self.image = pygame.transform.flip(self.frames[self.cur_frame + 17], True, False)
                 else:
                     self.cur_frame = (self.cur_frame + 1) % 11
                     self.image = pygame.transform.flip(self.frames[self.cur_frame + 6], True, False)
@@ -99,7 +132,7 @@ class Player(pygame.sprite.Sprite):
                 self.frame_tick_idle = 0
             else:
                 self.frame_tick_idle += 1
-            self.image = self.frames[self.cur_frame_idle]
+            self.image = pygame.transform.flip(self.frames[self.cur_frame_idle], self.leftdv, False)
             self.frame_tick = 10
         if jump:
             self.vy = -self.jump_count
@@ -170,4 +203,4 @@ class Player(pygame.sprite.Sprite):
         if self.hp <= 0:
             self.death()
             self.hp = 100
-        return (jump, fall)
+        return (jump, fall, attack)

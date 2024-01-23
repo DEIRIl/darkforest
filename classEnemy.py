@@ -8,19 +8,35 @@ class StandartEnemy(pygame.sprite.Sprite):
     def __init__(self, x, y, group, size, im=None):
         super().__init__(group)
         if im is None:
-            self.image = pygame.transform.scale(load_image("player41.png"), (0.06 * size[0], 0.13 * size[1]))
+            self.image = pygame.surface.Surface((0.06 * size[0], 0.16 * size[1]))
+            self.image.blit(pygame.transform.scale(load_image("player41.png"), (0.06 * size[0], 0.13 * size[1])), (0, 0.03 * size[1]))
+            self.mask = pygame.mask.from_surface(pygame.transform.scale(load_image("player41.png"), (0.06 * size[0], 0.13 * size[1])))
         else:
-            self.image = pygame.transform.scale(im[0], im[1])
+            self.image = pygame.surface.Surface((im[1][0], im[1][1] + 0.03 * size[1]))
+            self.image.blit(pygame.transform.scale(im[0], im[1]), (0, 0.03 * size[1]))
+            self.mask = pygame.mask.from_surface(im[0])
         self.rect = self.image.get_rect().move(x, y)
-        self.mask = pygame.mask.from_surface(self.image)
         self.vx = 2
         self.vy = 5
         self.v = 5
         self.time = 0
         self.Ttime = 200
         self.size = size
+        self.hp = 100
 
-    def update(self, floor, objects, motion, player, bullets):
+    def show_hp(self):
+        pygame.draw.rect(self.image, "black", (0, 0.01 * self.size[1], self.rect.w, 0.01 * self.size[1]))
+        pygame.draw.rect(self.image, "red", (0, 0.01 * self.size[1], self.rect.w * self.hp / 100, 0.01 * self.size[1]))
+
+    def update(self, floor, objects, motion, player, bullets, player_bullets):
+        self.show_hp()
+        if pygame.sprite.spritecollideany(self, player_bullets):
+            for bullet in player_bullets:
+                if self.rect.colliderect(bullet):
+                    self.hp -= bullet.minus_hp
+                    bullet.kill()
+                    if self.hp <= 0:
+                        self.kill()
         if motion == "r":
             self.rect = self.rect.move(player.v, 0)
         elif motion == "l":
@@ -81,7 +97,15 @@ class NoBulletEnemy(StandartEnemy):
                 self.frames.append(sheet.subsurface(pygame.Rect(
                     frame_location, self.rect.size)))
 
-    def update(self, floor, objects, motion, player, bullets):
+    def update(self, floor, objects, motion, player, bullets, player_bullets):
+        self.show_hp()
+        if pygame.sprite.spritecollideany(self, player_bullets):
+            for bullet in player_bullets:
+                if self.rect.colliderect(bullet):
+                    self.hp -= bullet.minus_hp
+                    bullet.kill()
+                    if self.hp <= 0:
+                        self.kill()
         if motion == "r":
             self.rect = self.rect.move(player.v, 0)
         elif motion == "l":
@@ -137,7 +161,15 @@ class NoMovementEnemy(StandartEnemy):
                 self.frames.append(sheet.subsurface(pygame.Rect(
                     frame_location, self.rect.size)))
 
-    def update(self, floor, objects, motion, player, bullets):
+    def update(self, floor, objects, motion, player, bullets, player_bullets):
+        self.show_hp()
+        if pygame.sprite.spritecollideany(self, player_bullets):
+            for bullet in player_bullets:
+                if self.rect.colliderect(bullet):
+                    self.hp -= bullet.minus_hp
+                    bullet.kill()
+                    if self.hp <= 0:
+                        self.kill()
         if motion == "r":
             self.rect = self.rect.move(player.v, 0)
         elif motion == "l":
