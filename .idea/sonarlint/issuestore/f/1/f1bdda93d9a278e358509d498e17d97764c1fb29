@@ -1,7 +1,7 @@
 
 spython:S11927"ODefine a constant instead of duplicating this literal "save_level.txt" 3 times.(í¼ß»úÿÿÿÿ8æÕÓëÓ1
 spython:S11920"ODefine a constant instead of duplicating this literal "curr_level.txt" 3 times.(÷¸®¾ıÿÿÿÿ8çÕÓëÓ1
-·python:S1515î"‘Add a parameter to function "retry" and use variable "screen" as its default value;The value of "screen" might change at the next loop iteration.(Å“¢Şùÿÿÿÿ8®¡äëÓ1
-ºpython:S1515Š"”Add a parameter to function "next_lvl" and use variable "screen" as its default value;The value of "screen" might change at the next loop iteration.(Å“¢Şùÿÿÿÿ8®¡äëÓ1
-µpython:S1515¡"”Add a parameter to function "save_level" and use variable "level" as its default value;The value of "level" might change at the next loop iteration.(²™ö¥8¯¡äëÓ1
-Cpython:S125Ø"Remove this commented out code.(È£æêşÿÿÿÿ8±¡äëÓ1
+·python:S1515î"‘Add a parameter to function "retry" and use variable "screen" as its default value;The value of "screen" might change at the next loop iteration.(Å“¢Şùÿÿÿÿ8ã·İëÓ1
+ºpython:S1515Š"”Add a parameter to function "next_lvl" and use variable "screen" as its default value;The value of "screen" might change at the next loop iteration.(Å“¢Şùÿÿÿÿ8ã·İëÓ1
+µpython:S1515¡"”Add a parameter to function "save_level" and use variable "level" as its default value;The value of "level" might change at the next loop iteration.(²™ö¥8ã·İëÓ1
+Cpython:S125Ø"Remove this commented out code.(È£æêşÿÿÿÿ8èÕÓëÓ1

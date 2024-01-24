@@ -1,0 +1,19 @@
+<changelist name="Uncommitted_changes_before_Merge_at_19_01_2024_23_22_[Changes]" date="1705695794013" recycled="true" deleted="true">
+  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Merge_at_19_01_2024_23_22_[Changes]/shelved.patch" />
+  <option name="DESCRIPTION" value="Uncommitted changes before Merge at 19.01.2024 23:22 [Changes]" />
+  <binary>
+    <option name="BEFORE_PATH" />
+    <option name="AFTER_PATH" value="data/enemy_tree_idle.png" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Merge_at_19_01_2024_23_22_[Changes]/enemy_tree_idle.png" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" />
+    <option name="AFTER_PATH" value="data/enemy_tree_attack.png" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Merge_at_19_01_2024_23_22_[Changes]/enemy_tree_attack.png" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" />
+    <option name="AFTER_PATH" value="data/enemy_tree_waiting.png" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Merge_at_19_01_2024_23_22_[Changes]/enemy_tree_waiting.png" />
+  </binary>
+</changelist>

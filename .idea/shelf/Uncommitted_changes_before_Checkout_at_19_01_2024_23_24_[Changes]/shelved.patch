@@ -1,0 +1,747 @@
+Index: classPlayer.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import pygame\r\n\r\nfrom libraryImages import load_image\r\n\r\n\r\nclass Player(pygame.sprite.Sprite):\r\n    image1 = load_image(\"player31.png\", -1)\r\n    image2 = pygame.transform.flip(image1, True, False)\r\n\r\n    def __init__(self, x, y, all_sprites, size, screen):\r\n        super().__init__(all_sprites)\r\n        self.radius = radius = 0.07 * size[1]\r\n        self.image = pygame.transform.scale(Player.image1, (radius, 2.1 * radius))\r\n        self.rect = self.image.get_rect().move(x, y)\r\n        self.mask = pygame.mask.from_surface(self.image)\r\n        self.x1motoin = \"n\"\r\n        self.x2motoin = \"n\"\r\n        self.vx = 0\r\n        self.vy = 5\r\n        self.v = 5\r\n        self.x = x\r\n        self.y = y\r\n        self.screen_size = size\r\n        self.jump_max = 20\r\n        self.jump_count = 0\r\n        self.max_hp = 100\r\n        self.hp = 100\r\n        self.sc = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)\r\n        self.screen = screen\r\n        self.running = True\r\n\r\n    def show_hp(self):\r\n        # pygame.draw.rect(self.sc, \"gray\", (\r\n        #     0.0145 * self.screen_size[0], self.screen_size[1] - 0.0712 * self.screen_size[1],\r\n        #     0.15835 * self.screen_size[0],\r\n        #     0.0315 * self.screen_size[1]))\r\n        pygame.draw.rect(self.sc, \"red\", (\r\n        0.0152 * self.screen_size[0], self.screen_size[1] - 0.06929 * self.screen_size[1], 3 * self.hp,\r\n        0.015625 * self.screen_size[0]))\r\n        pygame.draw.rect(self.sc, \"black\", (\r\n            0.0152 * self.screen_size[0] + 3 * self.hp, self.screen_size[1] - 0.06929 * self.screen_size[1],\r\n            3 * (self.max_hp - self.hp), 0.015625 * self.screen_size[0]))\r\n        self.screen.blit(self.sc, (0, 0))\r\n\r\n    def death(self):\r\n        pass\r\n        # self.running = False\r\n\r\n    def upd(self, jump, fall, objects, thorns, floor):\r\n        a = False\r\n        if self.x1motoin == \"y\" and self.x2motoin == \"y\":\r\n            self.vx = 0\r\n        elif self.x1motoin == \"y\":\r\n            self.vx = self.v\r\n            self.image = pygame.transform.scale(Player.image1, (self.radius, 2.1 * self.radius))\r\n        elif self.x2motoin == \"y\":\r\n            self.vx = -self.v\r\n            self.image = pygame.transform.scale(Player.image2, (self.radius, 2.1 * self.radius))\r\n        else:\r\n            self.vx = 0\r\n        if jump:\r\n            self.vy = -self.jump_count\r\n            if self.jump_count > 0 and not pygame.sprite.spritecollideany(self,\r\n                                                                          floor) and not pygame.sprite.spritecollideany(\r\n                self, objects):\r\n                self.jump_count -= 1\r\n            elif not pygame.sprite.spritecollideany(self, floor) and not pygame.sprite.spritecollideany(self, objects):\r\n                jump = False\r\n            elif pygame.sprite.spritecollideany(self, floor) and pygame.sprite.spritecollideany(self, objects):\r\n                jump = False\r\n                self.jump_count = 0\r\n                self.vy = 0\r\n        elif fall and self.jump_count <= 0:\r\n            if not pygame.sprite.spritecollideany(self, floor) and pygame.sprite.spritecollideany(self, objects):\r\n                self.jump_count -= 2\r\n                self.vy = -self.jump_count\r\n            elif not pygame.sprite.spritecollideany(self, floor) and not pygame.sprite.spritecollideany(self, objects):\r\n                fall = False\r\n                self.vy = -self.jump_count\r\n                self.jump_count = self.vy\r\n            elif pygame.sprite.spritecollideany(self, floor):\r\n                fall = False\r\n                self.vy = 0\r\n        else:\r\n            self.jump = False\r\n            fall = False\r\n            self.vy = self.jump_count if self.jump_count != 0 else self.vy\r\n            self.jump_count += 1\r\n            if pygame.sprite.spritecollideany(self, floor) or pygame.sprite.spritecollideany(self, objects):\r\n                self.vy = 0\r\n                self.jump_count = 0\r\n        if pygame.sprite.spritecollideany(self, thorns):\r\n            for thorn in thorns:\r\n                if self.rect.colliderect(thorn.rect):\r\n                    if thorn.rect.x + thorn.rect.w // 2 <= self.rect.x + self.rect.w // 2:\r\n                        self.rect.x += 50\r\n                        self.rect.y -= 40\r\n                        self.vx = 0\r\n                    else:\r\n                        self.rect.x -= 50\r\n                        self.rect.y -= 40\r\n                        self.vx = 0\r\n        #     if self.x1motoin == \"y\":\r\n        #         self.rect = self.rect.move(-self.v * 23, -self.v * 5)\r\n        #     if self.x2motoin == \"y\":\r\n        #         self.rect = self.rect.move(self.v * 23, -self.v * 5)\r\n        #     if self.x1motoin != \"y\" and self.x2motoin != \"y\":\r\n        #         self.rect = self.rect.move(-self.v * 23, -self.v * 5)\r\n            # if fall:\r\n            #     self.rect = self.rect.move(self.v * 15, 0)\r\n            self.hp -= 10\r\n            a = True\r\n        if not a:\r\n            self.rect = self.rect.move(self.vx, self.vy)\r\n        if self.hp == 0:\r\n            self.death()\r\n        return (jump, fall)\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/classPlayer.py b/classPlayer.py
+--- a/classPlayer.py	(revision 8fb467c7f5c22826afe6d34fb4c740bba121dc56)
++++ b/classPlayer.py	(date 1705695851990)
+@@ -4,24 +4,33 @@
+ 
+ 
+ class Player(pygame.sprite.Sprite):
+-    image1 = load_image("player31.png", -1)
+-    image2 = pygame.transform.flip(image1, True, False)
++    image = pygame.transform.scale(load_image("Idle.png"), (1500, 200))
++    image1 = pygame.transform.scale(load_image("Jump.png"), (2750, 200))
++    image2 = pygame.transform.scale(load_image("Run.png"), (2000, 200))
+ 
+     def __init__(self, x, y, all_sprites, size, screen):
+         super().__init__(all_sprites)
++        self.frames = []
++        self.frame_tick = 20
++        self.frame_tick_idle = 0
++        self.cut_sheet(Player.image, 6, 1)
++        self.cut_sheet(Player.image1, 11, 1)
++        self.cut_sheet(Player.image2, 8, 1)
++        self.cur_frame = 0
++        self.image = self.frames[self.cur_frame]
++        self.cur_frame_idle = 1
+         self.radius = radius = 0.07 * size[1]
+-        self.image = pygame.transform.scale(Player.image1, (radius, 2.1 * radius))
+         self.rect = self.image.get_rect().move(x, y)
+         self.mask = pygame.mask.from_surface(self.image)
+         self.x1motoin = "n"
+         self.x2motoin = "n"
+         self.vx = 0
+         self.vy = 5
+-        self.v = 5
++        self.v = 10
+         self.x = x
+         self.y = y
+         self.screen_size = size
+-        self.jump_max = 20
++        self.jump_max = 22
+         self.jump_count = 0
+         self.max_hp = 100
+         self.hp = 100
+@@ -29,35 +38,69 @@
+         self.screen = screen
+         self.running = True
+ 
++    def cut_sheet(self, sheet, columns, rows):
++        self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
++                                sheet.get_height() // rows)
++        for j in range(rows):
++            for i in range(columns):
++                frame_location = (self.rect.w * i, self.rect.h * j)
++                self.frames.append(sheet.subsurface(pygame.Rect(
++                    frame_location, self.rect.size)))
++
+     def show_hp(self):
+-        # pygame.draw.rect(self.sc, "gray", (
+-        #     0.0145 * self.screen_size[0], self.screen_size[1] - 0.0712 * self.screen_size[1],
+-        #     0.15835 * self.screen_size[0],
+-        #     0.0315 * self.screen_size[1]))
++        pygame.draw.rect(self.sc, "gray", (
++            0.0145 * self.screen_size[0], self.screen_size[1] - 0.0712 * self.screen_size[1],
++            3.04 * self.max_hp,
++            0.0315 * self.screen_size[1]))
+         pygame.draw.rect(self.sc, "red", (
+-        0.0152 * self.screen_size[0], self.screen_size[1] - 0.06929 * self.screen_size[1], 3 * self.hp,
+-        0.015625 * self.screen_size[0]))
++            0.0152 * self.screen_size[0], self.screen_size[1] - 0.06929 * self.screen_size[1], 3 * self.hp,
++            0.015625 * self.screen_size[0]))
+         pygame.draw.rect(self.sc, "black", (
+             0.0152 * self.screen_size[0] + 3 * self.hp, self.screen_size[1] - 0.06929 * self.screen_size[1],
+             3 * (self.max_hp - self.hp), 0.015625 * self.screen_size[0]))
+         self.screen.blit(self.sc, (0, 0))
+ 
+     def death(self):
+-        pass
+-        # self.running = False
++        self.running = False
+ 
+-    def upd(self, jump, fall, objects, thorns, floor):
++    def upd(self, jump, fall, objects, thorns, floor, bullets, heals):
+         a = False
+         if self.x1motoin == "y" and self.x2motoin == "y":
+             self.vx = 0
+         elif self.x1motoin == "y":
++            self.frame_tick_idle = 10
++            self.frame_tick += 1
+             self.vx = self.v
+-            self.image = pygame.transform.scale(Player.image1, (self.radius, 2.1 * self.radius))
++            if self.frame_tick >= 10:
++                if not jump:
++                    self.cur_frame = (self.cur_frame + 1) % 8
++                    self.image = self.frames[self.cur_frame + 14]
++                else:
++                    self.cur_frame = (self.cur_frame + 1) % 11
++                    self.image = self.frames[self.cur_frame + 6]
++                self.frame_tick = 0
+         elif self.x2motoin == "y":
++            self.frame_tick_idle = 10
++            self.frame_tick += 1
+             self.vx = -self.v
+-            self.image = pygame.transform.scale(Player.image2, (self.radius, 2.1 * self.radius))
++            if self.frame_tick >= 10:
++                if not jump:
++                    self.cur_frame = (self.cur_frame + 1) % 8
++                    self.image = pygame.transform.flip(self.frames[self.cur_frame + 14], True, False)
++                else:
++                    self.cur_frame = (self.cur_frame + 1) % 11
++                    self.image = pygame.transform.flip(self.frames[self.cur_frame + 6], True, False)
++                self.frame_tick = 0
+         else:
+             self.vx = 0
++            self.cur_frame = 0
++            if self.frame_tick_idle >= 10:
++                self.cur_frame_idle = (self.cur_frame_idle + 1) % 6
++                self.frame_tick_idle = 0
++            else:
++                self.frame_tick_idle += 1
++            self.image = self.frames[self.cur_frame_idle]
++            self.frame_tick = 10
+         if jump:
+             self.vy = -self.jump_count
+             if self.jump_count > 0 and not pygame.sprite.spritecollideany(self,
+@@ -89,29 +132,41 @@
+             if pygame.sprite.spritecollideany(self, floor) or pygame.sprite.spritecollideany(self, objects):
+                 self.vy = 0
+                 self.jump_count = 0
+-        if pygame.sprite.spritecollideany(self, thorns):
++        if pygame.sprite.spritecollideany(self, thorns) and not a:
+             for thorn in thorns:
+                 if self.rect.colliderect(thorn.rect):
+                     if thorn.rect.x + thorn.rect.w // 2 <= self.rect.x + self.rect.w // 2:
+                         self.rect.x += 50
+                         self.rect.y -= 40
+                         self.vx = 0
+-                    else:
++                    elif thorn.rect.x + thorn.rect.w // 2 > self.rect.x + self.rect.w // 2:
+                         self.rect.x -= 50
+                         self.rect.y -= 40
+                         self.vx = 0
+-        #     if self.x1motoin == "y":
+-        #         self.rect = self.rect.move(-self.v * 23, -self.v * 5)
+-        #     if self.x2motoin == "y":
+-        #         self.rect = self.rect.move(self.v * 23, -self.v * 5)
+-        #     if self.x1motoin != "y" and self.x2motoin != "y":
+-        #         self.rect = self.rect.move(-self.v * 23, -self.v * 5)
+-            # if fall:
+-            #     self.rect = self.rect.move(self.v * 15, 0)
+-            self.hp -= 10
+-            a = True
++                #     if self.x1motoin == "y":
++                #         self.rect = self.rect.move(-self.v * 23, -self.v * 5)
++                #     if self.x2motoin == "y":
++                #         self.rect = self.rect.move(self.v * 23, -self.v * 5)
++                #     if self.x1motoin != "y" and self.x2motoin != "y":
++                #         self.rect = self.rect.move(-self.v * 23, -self.v * 5)
++                # if fall:
++                #     self.rect = self.rect.move(self.v * 15, 0)
++                self.hp -= 10
++                a = True
++        if pygame.sprite.spritecollideany(self, bullets):
++            for bullet in bullets:
++                if self.rect.colliderect(bullet.rect):
++                    self.hp -= bullet.minus_hp
++                    bullet.kill()
++        if pygame.sprite.spritecollideany(self, heals):
++            for heal in heals:
++                if self.rect.colliderect(heal.rect):
++                    self.hp += heal.plus_hp
++                    if self.hp >= 100:
++                        self.hp = 100
++                    heal.kill()
+         if not a:
+             self.rect = self.rect.move(self.vx, self.vy)
+-        if self.hp == 0:
++        if self.hp <= 0:
+             self.death()
+         return (jump, fall)
+Index: main.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import pygame\r\n\r\nfrom libraryImages import load_image\r\n\r\npygame.init()\r\nscreen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)\r\nw, h = screen.get_size()\r\nscreen_start = pygame.display.set_mode((0.5 * w, 0.5 * h))\r\nall_units = pygame.sprite.Group()\r\nfloor = pygame.sprite.Group()\r\nobjects = pygame.sprite.Group()\r\nthorns = pygame.sprite.Group()\r\n\r\nfrom classPlayer import Player\r\nfrom classEnemy import Enemy\r\nfrom classMainFloor import MainFloor\r\nfrom classBlock import Block\r\nfrom classThorns import Thorns\r\n\r\nrun = True\r\nwhile run:\r\n    screen_start.fill(\"white\")\r\n    for event in pygame.event.get():\r\n        if event.type == pygame.QUIT:\r\n            exit()\r\n        if event.type == pygame.MOUSEBUTTONDOWN:\r\n            run = False\r\n    pygame.display.flip()\r\nMainFloor((w, h), floor)\r\nBlock(0.2 * w, 1, w, h, objects)\r\nBlock(0.2 * w, 2, w, h, objects)\r\nThorns(0.7 * w, 1, w, h, thorns)\r\nplayer = Player(0.5 * w, 0.8 * h, all_units, (w, h), screen)\r\nEnemy(0.8 * w, 0.7 * h, all_units, (w, h))\r\nclock = pygame.time.Clock()\r\njump = False\r\nf = False\r\nfall = False\r\nmotion = \"\"\r\nscreen_image = pygame.transform.scale(load_image(\"screen.jpg\"), (w, h))\r\n\r\nrunning = True\r\nwhile running:\r\n    while player.running:\r\n        screen.fill((50, 50, 50))\r\n        for event in pygame.event.get():\r\n            if event.type == pygame.QUIT:\r\n                player.running = False\r\n            if event.type == pygame.KEYDOWN:\r\n                if event.key == pygame.K_d:\r\n                    player.x1motoin = \"y\"\r\n                if event.key == pygame.K_a:\r\n                    player.x2motoin = \"y\"\r\n                if (event.key == pygame.K_w or event.key == pygame.K_SPACE) and not jump and not f and not fall and player.jump_count == 0:\r\n                    jump = True\r\n                    player.jump_count = player.jump_max\r\n                if event.key == pygame.K_LSHIFT:\r\n                    player.v *= 2\r\n                if event.key == pygame.K_s:\r\n                    f = True\r\n                if event.key == pygame.K_SPACE and f:\r\n                    fall = True\r\n                    player.jump_count = -player.jump_max\r\n            if event.type == pygame.KEYUP:\r\n                if event.key == pygame.K_d:\r\n                    player.x1motoin = \"n\"\r\n                if event.key == pygame.K_a:\r\n                    player.x2motoin = \"n\"\r\n                if event.key == pygame.K_LSHIFT:\r\n                    player.v /= 2\r\n                if event.key == pygame.K_s:\r\n                    f = False\r\n        if player.rect.x < 0.3 * w:\r\n            player.rect = player.rect.move(-player.vx, 0)\r\n            objects.update(\"r\", player.v)\r\n            thorns.update(\"r\", player.v)\r\n            motion = \"r\"\r\n        elif player.rect.x + player.radius > 0.7 * w:\r\n            player.rect = player.rect.move(-player.vx, 0)\r\n            objects.update(\"l\", player.v)\r\n            thorns.update(\"l\", player.v)\r\n            motion = \"l\"\r\n        else:\r\n            motion = \"\"\r\n        jump, fall = player.upd(jump, fall, objects, thorns, floor)\r\n        screen.blit(screen_image, (0, 0))\r\n        objects.draw(screen)\r\n        thorns.draw(screen)\r\n        floor.draw(screen)\r\n        all_units.update(floor, objects, motion)\r\n        all_units.draw(screen)\r\n        player.show_hp()\r\n        clock.tick(120)\r\n        pygame.display.flip()\r\n    running = False\r\npygame.quit()\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/main.py b/main.py
+--- a/main.py	(revision 8fb467c7f5c22826afe6d34fb4c740bba121dc56)
++++ b/main.py	(date 1705695853299)
+@@ -5,47 +5,107 @@
+ pygame.init()
+ screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+ w, h = screen.get_size()
+-screen_start = pygame.display.set_mode((0.5 * w, 0.5 * h))
++screen = pygame.display.set_mode((0.5 * w, 0.5 * h))
++
+ all_units = pygame.sprite.Group()
++all_enemy = pygame.sprite.Group()
+ floor = pygame.sprite.Group()
+ objects = pygame.sprite.Group()
+ thorns = pygame.sprite.Group()
++bullets = pygame.sprite.Group()
++heals = pygame.sprite.Group()
+ 
+ from classPlayer import Player
+-from classEnemy import Enemy
++from classEnemy import StandartEnemy, NoBulletEnemy, NoMovementEnemy
+ from classMainFloor import MainFloor
+ from classBlock import Block
+ from classThorns import Thorns
++from classHeal import LittleHeal, BigHeal
+ 
+ run = True
+ while run:
+-    screen_start.fill("white")
++    screen.fill("white")
+     for event in pygame.event.get():
+         if event.type == pygame.QUIT:
+             exit()
+-        if event.type == pygame.MOUSEBUTTONDOWN:
++        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+             run = False
+     pygame.display.flip()
++
+ MainFloor((w, h), floor)
+-Block(0.2 * w, 1, w, h, objects)
+-Block(0.2 * w, 2, w, h, objects)
+-Thorns(0.7 * w, 1, w, h, thorns)
+ player = Player(0.5 * w, 0.8 * h, all_units, (w, h), screen)
+-Enemy(0.8 * w, 0.7 * h, all_units, (w, h))
+ clock = pygame.time.Clock()
+ jump = False
+ f = False
+ fall = False
+ motion = ""
+ screen_image = pygame.transform.scale(load_image("screen.jpg"), (w, h))
++screen_finish_image = pygame.transform.scale(load_image("screen_finish.jpg"), (0.5 * w, 0.5 * h))
++level = 0
++x = 0
++the_first_download = False
++
++# StandartEnemy(0.5 * w, 0.3 * h, all_enemy, (w, h))
++# NoBulletEnemy(0.5 * w, 0.3 * h, all_enemy, (w, h))
++NoMovementEnemy(0.7 * w, 0.7 * h, all_enemy, (w, h))
++Block(0.5 * w, 1, w, h, objects)
++Block(0.55 * w, 1, w, h, objects)
++Block(0.6 * w, 1, w, h, objects)
++Block(0.65 * w, 1, w, h, objects)
++BigHeal(0.7 * w, 0.8 * h, w, h, heals)
++
++def training_level():
++    global the_first_download
++    font = pygame.font.Font(None, 50)
++    text = font.render("Для движения нажмите и удерживайте клавиши 'A' или 'D'", True, "white")
++    text2 = font.render("Для прыжка нажмите 'W' или 'SPACE'", True, "white")
++    text3 = font.render("Вы можете запрыгнуть на платформу", True, "white")
++    text4 = font.render("Находясь на платформе вы можете нажать одновременно 'S' и 'SPACE' чтобы спрыгнуть с платформы", True, "white")
++    text5 = font.render("Чтобы ускориться зажмите 'SHIFT'", True, "white")
++    text6 = font.render("Совет вам, игрок, не натыкайтесь на шипы, а то будет бобо...", True, "white")
++    screen.blit(text, (0.3 * w + x, 0.4 * h))
++    screen.blit(text2, (1.3 * w + x, 0.4 * h))
++    screen.blit(text3, (2.3 * w + x, 0.4 * h))
++    screen.blit(text4, (3.3 * w + x, 0.4 * h))
++    screen.blit(text5, (4.5 * w + x, 0.4 * h))
++    screen.blit(text6, (6 * w + x, 0.4 * h))
++    if not the_first_download:
++        the_first_download = True
++        Block(2.5 * w + x, 1, w, h, objects)
++        Block(3.7 * w + x, 1, w, h, objects)
++        Block(3.7 * w + x, 2, w, h, objects)
++        Thorns(6.3 * w + x, 1, w, h, thorns)
++
+ 
+ running = True
+ while running:
+-    while player.running:
+-        screen.fill((50, 50, 50))
++    screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
++    screen.fill((50, 50, 50))
++    player.running = True
++    while player.running:
+         for event in pygame.event.get():
+             if event.type == pygame.QUIT:
+                 player.running = False
++                player.rect.x = 0.5 * w
++                player.rect.y = 0.8 * h
++                player.hp = player.max_hp
++                x = 0
++                for it in bullets:
++                    it.kill()
++                bullets.clear(screen, pygame.Surface((w, h)))
++                for it in heals:
++                    it.kill()
++                heals.clear(screen, pygame.Surface((w, h)))
++                for it in all_enemy:
++                    it.kill()
++                all_enemy.clear(screen, pygame.Surface((w, h)))
++                for it in objects:
++                    it.kill()
++                objects.clear(screen, pygame.Surface((w, h)))
++                for it in thorns:
++                    it.kill()
++                thorns.clear(screen, pygame.Surface((w, h)))
++                the_first_download = False
+             if event.type == pygame.KEYDOWN:
+                 if event.key == pygame.K_d:
+                     player.x1motoin = "y"
+@@ -70,27 +130,49 @@
+                     player.v /= 2
+                 if event.key == pygame.K_s:
+                     f = False
+-        if player.rect.x < 0.3 * w:
++        if player.rect.x < 0.35 * w:
+             player.rect = player.rect.move(-player.vx, 0)
+             objects.update("r", player.v)
+             thorns.update("r", player.v)
++            heals.update("r", player.v)
+             motion = "r"
+-        elif player.rect.x + player.radius > 0.7 * w:
++            x += player.v
++        elif player.rect.x + player.radius > 0.65 * w:
+             player.rect = player.rect.move(-player.vx, 0)
+             objects.update("l", player.v)
+             thorns.update("l", player.v)
++            heals.update("l", player.v)
+             motion = "l"
++            x -= player.v
+         else:
+             motion = ""
+-        jump, fall = player.upd(jump, fall, objects, thorns, floor)
++        jump, fall = player.upd(jump, fall, objects, thorns, floor, bullets, heals)
+         screen.blit(screen_image, (0, 0))
++        if level == 0:
++            screen.fill((50, 50, 50))
++            training_level()
++        # screen.blit(screen2, (0, 0))
+         objects.draw(screen)
+         thorns.draw(screen)
++        bullets.update(motion, player.v)
++        bullets.draw(screen)
++        heals.draw(screen)
+         floor.draw(screen)
+-        all_units.update(floor, objects, motion)
++        all_enemy.update(floor, objects, motion, player, bullets)
++        all_enemy.draw(screen)
+         all_units.draw(screen)
+         player.show_hp()
+         clock.tick(120)
+         pygame.display.flip()
+-    running = False
++    screen = pygame.display.set_mode((0.5 * w, 0.5 * h))
++    run = True
++    while run:
++        screen.blit(screen_finish_image, (0, 0))
++        for event in pygame.event.get():
++            if event.type == pygame.QUIT:
++                running = False
++                run = False
++            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
++                run = False
++        pygame.display.flip()
+ pygame.quit()
+Index: classThorns.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import pygame\r\n\r\nfrom libraryImages import load_image\r\n\r\nclass Thorns(pygame.sprite.Sprite):\r\n    image = load_image('thorns2.png')\r\n    def __init__(self, x, coord, w, h, group):\r\n        super().__init__(group)\r\n        coords = {1: 0.83 * h, 2: 0.46 * h}\r\n        self.image = pygame.transform.scale(Thorns.image, (0.07 * w, 0.08 * h))\r\n        self.mask = pygame.mask.from_surface(self.image)\r\n        self.rect = self.image.get_rect().move(x, coords[coord])\r\n\r\n    def update(self, motion, speed):\r\n        if motion == \"r\":\r\n            self.rect = self.rect.move(speed, 0)\r\n        else:\r\n            self.rect = self.rect.move(-speed, 0)\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/classThorns.py b/classThorns.py
+--- a/classThorns.py	(revision 8fb467c7f5c22826afe6d34fb4c740bba121dc56)
++++ b/classThorns.py	(date 1705695852372)
+@@ -2,8 +2,10 @@
+ 
+ from libraryImages import load_image
+ 
++
+ class Thorns(pygame.sprite.Sprite):
+     image = load_image('thorns2.png')
++
+     def __init__(self, x, coord, w, h, group):
+         super().__init__(group)
+         coords = {1: 0.83 * h, 2: 0.46 * h}
+Index: classEnemy.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import pygame\r\n\r\nfrom libraryImages import load_image\r\n\r\nclass Enemy(pygame.sprite.Sprite):\r\n    image = load_image(\"player41.png\")\r\n\r\n    def __init__(self, x, y, group, size):\r\n        super().__init__(group)\r\n        self.radius = radius = 0.07 * size[1]\r\n        self.image = pygame.transform.scale(Enemy.image, (radius, 2.1 * radius))\r\n        self.rect = self.image.get_rect().move(x, y)\r\n        self.mask = pygame.mask.from_surface(self.image)\r\n        self.vx = 0\r\n        self.vy = 5\r\n        self.v = 5\r\n\r\n    def update(self, floor, objects, motion):\r\n        if motion == \"r\":\r\n            self.rect = self.rect.move(5, 0)\r\n        elif motion == \"l\":\r\n            self.rect = self.rect.move(-5, 0)\r\n        # self.rect.x += self.vx\r\n        self.rect.y += self.vy\r\n        if pygame.sprite.spritecollideany(self, floor) or pygame.sprite.spritecollideany(self, objects):\r\n            self.vy = 0\r\n            self.jump_count = 0\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/classEnemy.py b/classEnemy.py
+--- a/classEnemy.py	(revision 8fb467c7f5c22826afe6d34fb4c740bba121dc56)
++++ b/classEnemy.py	(date 1705695850928)
+@@ -1,27 +1,158 @@
+ import pygame
+ 
+ from libraryImages import load_image
++from classBullet import Arrow, Branch
+ 
+-class Enemy(pygame.sprite.Sprite):
++
++class StandartEnemy(pygame.sprite.Sprite):
+     image = load_image("player41.png")
+ 
+-    def __init__(self, x, y, group, size):
++    def __init__(self, x, y, group, size, im=None):
+         super().__init__(group)
+         self.radius = radius = 0.07 * size[1]
+-        self.image = pygame.transform.scale(Enemy.image, (radius, 2.1 * radius))
++        if im is None:
++            self.image = pygame.transform.scale(StandartEnemy.image, (radius, 2.1 * radius))
++        else:
++            self.image = pygame.transform.scale(im[0], im[1])
+         self.rect = self.image.get_rect().move(x, y)
+         self.mask = pygame.mask.from_surface(self.image)
+-        self.vx = 0
++        self.vx = 2
+         self.vy = 5
+         self.v = 5
++        self.time = 0
++        self.Ttime = 200
++        self.size = size
+ 
+-    def update(self, floor, objects, motion):
++    def update(self, floor, objects, motion, player, bullets):
+         if motion == "r":
+-            self.rect = self.rect.move(5, 0)
++            self.rect = self.rect.move(player.v, 0)
+         elif motion == "l":
+-            self.rect = self.rect.move(-5, 0)
+-        # self.rect.x += self.vx
++            self.rect = self.rect.move(-player.v, 0)
+         self.rect.y += self.vy
+-        if pygame.sprite.spritecollideany(self, floor) or pygame.sprite.spritecollideany(self, objects):
++        if pygame.sprite.spritecollideany(self, objects):
++            if ((self.rect.x - player.rect.x) ** 2 + (self.rect.y - player.rect.y) ** 2) ** 0.5 <= 0.3 * self.size[0]:
++                if self.Ttime >= 200:
++                    self.Ttime = 0
++                    if player.rect.x > self.rect.x:
++                        Arrow(self.rect.x, self.rect.y, *self.size, bullets, 15)
++                    else:
++                        Arrow(self.rect.x, self.rect.y, *self.size, bullets, -15)
++                else:
++                    self.Ttime += 1
++                self.vy = 0
++            else:
++                self.Ttime = 200
++                self.vy = 0
++                self.rect.x += self.vx
++        else:
++            if ((self.rect.x - player.rect.x) ** 2 + (self.rect.y - player.rect.y) ** 2) ** 0.5 <= 0.3 * self.size[0]:
++                if self.Ttime >= 200:
++                    self.Ttime = 0
++                    if player.rect.x > self.rect.x:
++                        Arrow(self.rect.x, self.rect.y, *self.size, bullets, 15)
++                    else:
++                        Arrow(self.rect.x, self.rect.y, *self.size, bullets, -15)
++                else:
++                    self.Ttime += 1
++            else:
++                self.Ttime = 200
++                if self.time >= 100:
++                    self.vx = -self.vx
++                    self.rect.x += self.vx
++                    self.time = 0
++                else:
++                    self.time += 1
++
++
++class NoBulletEnemy(StandartEnemy):
++    image = load_image("enemy_slime.png")
++
++    def __init__(self, x, y, group, size):
++        self.frames = []
++        self.frame_tick = 20
++        self.cut_sheet(NoBulletEnemy.image, 8, 3)
++        self.cur_frame = 16
++        self.stop = False
++        super().__init__(x, y, group, size, (self.frames[self.cur_frame], (0.055 * size[0], 0.06 * size[1])))
++
++    def cut_sheet(self, sheet, columns, rows):
++        self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
++                                sheet.get_height() // rows)
++        for j in range(rows):
++            for i in range(columns):
++                frame_location = (self.rect.w * i, self.rect.h * j)
++                self.frames.append(sheet.subsurface(pygame.Rect(
++                    frame_location, self.rect.size)))
++
++    def update(self, floor, objects, motion, player, bullets):
++        if motion == "r":
++            self.rect = self.rect.move(player.v, 0)
++        elif motion == "l":
++            self.rect = self.rect.move(-player.v, 0)
++        self.rect.y += self.vy
++        if self.stop:
++            self.cur_frame = 16
++        elif self.vx <= 0:
++            self.cur_frame = 0
++        elif self.vx >= 0:
++            self.cur_frame = 8
++        self.image = self.frames[self.cur_frame]
++        if pygame.sprite.spritecollideany(self, objects):
+             self.vy = 0
+-            self.jump_count = 0
++            self.rect.x += self.vx
++            self.stop = False
++        else:
++            if self.time >= 200:
++                self.vx = -self.vx
++                self.rect.x += self.vx
++                self.time = 0
++                self.stop = False
++            else:
++                self.time += 1
++                self.stop = True
++
++
++class NoMovementEnemy(StandartEnemy):
++    image = load_image("enemy_ent.png")
++
++    def __init__(self, x, y, group, size):
++        self.frames = []
++        self.frame_tick = 20
++        self.cut_sheet(NoMovementEnemy.image, 8, 3)
++        self.cur_frame = 16
++        self.stop = False
++        super().__init__(x, y, group, size, (NoMovementEnemy.image, (0.075 * size[0], 0.15 * size[1])))
++
++    def cut_sheet(self, sheet, columns, rows):
++        self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
++                                sheet.get_height() // rows)
++        for j in range(rows):
++            for i in range(columns):
++                frame_location = (self.rect.w * i, self.rect.h * j)
++                self.frames.append(sheet.subsurface(pygame.Rect(
++                    frame_location, self.rect.size)))
++
++    def update(self, floor, objects, motion, player, bullets):
++        if motion == "r":
++            self.rect = self.rect.move(player.v, 0)
++        elif motion == "l":
++            self.rect = self.rect.move(-player.v, 0)
++        self.rect.y += self.vy
++        if pygame.sprite.spritecollideany(self, floor):
++            if ((self.rect.x - player.x) ** 2 + (self.rect.y - player.y) ** 2) ** 0.5 <= 0.4 * self.size[0]:
++                if self.Ttime >= 200:
++                    self.Ttime = 0
++                    Branch(self.rect.x, self.rect.y, *self.size, bullets, (player.rect.x, player.rect.y))
++                else:
++                    self.Ttime += 1
++                self.vy = 0
++            else:
++                self.Ttime = 200
++                self.vy = 0
++        # else:
++        #     if ((self.rect.x - player.x) ** 2 + (self.rect.y - player.y) ** 2) ** 0.5 <= 0.2 * self.size[0]:
++        #         if self.Ttime >= 200:
++        #             self.Ttime = 0
++        #             Branch(self.rect.x, self.rect.y, *self.size, bullets, (player.rect.x, player.rect.y))
++        #         else:
++        #             self.Ttime += 1
+Index: classBlock.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import pygame\r\n\r\nfrom libraryImages import load_image\r\n\r\nclass Block(pygame.sprite.Sprite):\r\n    image = load_image('block2.png')\r\n    def __init__(self,x, coord, w, h, group):\r\n        super().__init__(group)\r\n        coords = {1: 0.6 * h, 2: 0.25 * h}\r\n        self.image = pygame.transform.scale(Block.image, (0.15 * w, 0.08 * h))\r\n        self.mask = pygame.mask.from_surface(self.image)\r\n        self.rectt = self.image.get_rect().move(x, coords[coord])\r\n        self.rect = pygame.Rect((x, coords[coord] + 0.08 * h), (0.15 * w, 10))\r\n\r\n    def update(self, motion, speed):\r\n        if motion == \"r\":\r\n            self.rect = self.rect.move(speed, 0)\r\n        else:\r\n            self.rect = self.rect.move(-speed, 0)\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/classBlock.py b/classBlock.py
+--- a/classBlock.py	(revision 8fb467c7f5c22826afe6d34fb4c740bba121dc56)
++++ b/classBlock.py	(date 1705695746895)
+@@ -2,15 +2,17 @@
+ 
+ from libraryImages import load_image
+ 
++
+ class Block(pygame.sprite.Sprite):
+-    image = load_image('block2.png')
+-    def __init__(self,x, coord, w, h, group):
++    image = load_image('block3.png')
++
++    def __init__(self, x, coord, w, h, group):
+         super().__init__(group)
+         coords = {1: 0.6 * h, 2: 0.25 * h}
+         self.image = pygame.transform.scale(Block.image, (0.15 * w, 0.08 * h))
+         self.mask = pygame.mask.from_surface(self.image)
+         self.rectt = self.image.get_rect().move(x, coords[coord])
+-        self.rect = pygame.Rect((x, coords[coord] + 0.08 * h), (0.15 * w, 10))
++        self.rect = pygame.Rect((x, coords[coord]), (0.15 * w, 1))
+ 
+     def update(self, motion, speed):
+         if motion == "r":
+Index: classBranch.py
+===================================================================
+diff --git a/classBranch.py b/classBranch.py
+deleted file mode 100644
+--- a/classBranch.py	(revision 8fb467c7f5c22826afe6d34fb4c740bba121dc56)
++++ /dev/null	(revision 8fb467c7f5c22826afe6d34fb4c740bba121dc56)
+@@ -1,14 +0,0 @@
+-import pygame
+-
+-class Branch(pygame.sprite.Sprite):
+-    def __init__(self, x, y, w, h, group):
+-        super().__init__(group)
+-        self.image = pygame.Surface((w, h), pygame.SRCALPHA, 32)
+-        pygame.draw.rect(self.image, pygame.Color("white"), (0, 0, w, h))
+-        self.rect = pygame.Rect(x, y, w, h)
+-
+-    def update(self, motion, speed):
+-        if motion == "r":
+-            self.rect = self.rect.move(speed, 0)
+-        else:
+-            self.rect = self.rect.move(-speed, 0)
+\ No newline at end of file
+Index: classHeal.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/classHeal.py b/classHeal.py
+new file mode 100644
+--- /dev/null	(date 1705695731904)
++++ b/classHeal.py	(date 1705695731904)
+@@ -0,0 +1,28 @@
++import pygame
++
++from libraryImages import load_image
++
++class LittleHeal(pygame.sprite.Sprite):
++    image = load_image('heal.png')
++    def __init__(self, x, y, w, h, group, im=None):
++        super().__init__(group)
++        if im is None:
++            self.image = pygame.transform.scale(LittleHeal.image, (0.03645 * w, 0.06481 * h))
++        else:
++            self.image = pygame.transform.scale(im, (0.03645 * w, 0.06481 * h))
++        self.mask = pygame.mask.from_surface(self.image)
++        self.rect = self.image.get_rect().move(x, y)
++        self.plus_hp = 20
++
++    def update(self, motion, speed):
++        if motion == "r":
++            self.rect = self.rect.move(speed, 0)
++        elif motion == "l":
++            self.rect = self.rect.move(-speed, 0)
++
++
++class BigHeal(LittleHeal):
++    image = load_image("big_heal.png")
++    def __init__(self, x, y, w, h, group):
++        super().__init__(x, y, w, h, group, BigHeal.image)
++        self.plus_hp = 50
+Index: libraryImages.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import os\r\nimport sys\r\n\r\nimport pygame\r\n\r\ndef load_image(name, colorkey=None):\r\n    fullname = os.path.join('data', name)\r\n    if not os.path.isfile(fullname):\r\n        print(f\"Файл с изображением '{fullname}' не найден\")\r\n        sys.exit()\r\n    image = pygame.image.load(fullname)\r\n    # if colorkey is not None:\r\n    #     image = image.convert()\r\n    #     if colorkey == -1:\r\n    #         colorkey = image.get_at((0, 0))\r\n    #     image.set_colorkey(colorkey)\r\n    # else:\r\n    #     image = image.convert_alpha()\r\n    return image\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/libraryImages.py b/libraryImages.py
+--- a/libraryImages.py	(revision 8fb467c7f5c22826afe6d34fb4c740bba121dc56)
++++ b/libraryImages.py	(date 1705695852842)
+@@ -3,6 +3,7 @@
+ 
+ import pygame
+ 
++
+ def load_image(name, colorkey=None):
+     fullname = os.path.join('data', name)
+     if not os.path.isfile(fullname):
+Index: classBullet.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/classBullet.py b/classBullet.py
+new file mode 100644
+--- /dev/null	(date 1705695731902)
++++ b/classBullet.py	(date 1705695731902)
+@@ -0,0 +1,59 @@
++import pygame
++
++from libraryImages import load_image
++from math import atan2, pi
++
++
++class Arrow(pygame.sprite.Sprite):
++    image = load_image('arrow.png')
++
++    def __init__(self, x, y, w, h, group, speed):
++        super().__init__(group)
++        self.speed = speed
++        self.image = pygame.transform.scale(Arrow.image, (0.035 * w, 0.05 * h))
++        if speed > 0:
++            self.image = pygame.transform.flip(self.image, True, False)
++        self.mask = pygame.mask.from_surface(self.image)
++        self.rect = self.image.get_rect().move(x, y)
++        self.minus_hp = 15
++
++    def update(self, motion, speed):
++        if motion == "r":
++            self.rect = self.rect.move(speed, 0)
++        elif motion == "l":
++            self.rect = self.rect.move(-speed, 0)
++        self.rect.x += self.speed
++
++
++class Branch(pygame.sprite.Sprite):
++    image = load_image("branch.png")
++
++    def __init__(self, x, y, w, h, group, target):
++        super().__init__(group)
++        self.x_speed = (target[0] - x) / 60
++        self.y_speed = (target[1] - y) / 60
++        self.size = (w, h)
++        angle = atan2(self.y_speed, self.x_speed) * (180 / pi)
++        if self.x_speed < 0:
++            angle += 180
++        else:
++            angle = abs(angle)
++        self.image = pygame.transform.rotate(pygame.transform.scale(Branch.image, (0.07 * w, 0.08 * h)), angle)
++        self.mask = pygame.mask.from_surface(self.image)
++        self.rect = self.image.get_rect().move(x, y)
++        self.minus_hp = 25
++        self.time = 11
++
++
++    def update(self, motion, speed):
++        if motion == "r":
++            self.rect = self.rect.move(speed, 0)
++        elif motion == "l":
++            self.rect = self.rect.move(-speed, 0)
++        if self.time % 60 == 0:
++            self.rect.x += self.x_speed
++            self.rect.y += self.y_speed
++        else:
++            self.time += 1
++        if self.time >= 601:
++            self.kill()
+\ No newline at end of file
