@@ -1,0 +1,12 @@
+
+lpython:S116"URename this field "buttonSurface" to match the regular expression ^[_a-z][_a-z0-9]*$.(³•òœ
+spython:S116"WRename this field "onclickFunction" to match the regular expression ^[_a-z][_a-z0-9]*$.(´€­›üÿÿÿÿ
+ipython:S116"RRename this field "buttonRect" to match the regular expression ^[_a-z][_a-z0-9]*$.(ËáûÆ
+ipython:S116"RRename this field "fillColors" to match the regular expression ^[_a-z][_a-z0-9]*$.( Ê»
+rpython:S116"VRename this field "alreadyPressed" to match the regular expression ^[_a-z][_a-z0-9]*$.(§ÓüËüÿÿÿÿ
+ipython:S116"RRename this field "buttonSurf" to match the regular expression ^[_a-z][_a-z0-9]*$.(’§Ş’
+lpython:S116"PRename this field "onePress" to match the regular expression ^[_a-z][_a-z0-9]*$.(‹×çüıÿÿÿÿ
+rpython:S117"VRename this parameter "buttonText" to match the regular expression ^[_a-z][a-z0-9_]*$.(ïÑ¯ºøÿÿÿÿ
+wpython:S117"[Rename this parameter "onclickFunction" to match the regular expression ^[_a-z][a-z0-9_]*$.(ïÑ¯ºøÿÿÿÿ
+ppython:S117"TRename this parameter "onePress" to match the regular expression ^[_a-z][a-z0-9_]*$.(ïÑ¯ºøÿÿÿÿ
+upython:S117"YRename this local variable "mousePos" to match the regular expression ^[_a-z][a-z0-9_]*$.(ÕîÁäûÿÿÿÿ
