@@ -1,0 +1,263 @@
+Index: classPlayer.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import pygame\r\n\r\nfrom libraryImages import load_image\r\n\r\n\r\nclass Player(pygame.sprite.Sprite):\r\n    image1 = load_image(\"player3.png\", -1)\r\n    image2 = pygame.transform.flip(image1, True, False)\r\n\r\n    def __init__(self, x, y, all_sprites, size, screen):\r\n        super().__init__(all_sprites)\r\n        self.radius = radius = 75\r\n        self.image = pygame.transform.scale(Player.image1, (radius, 2.25 * radius))\r\n        self.rect = self.image.get_rect().move(x, y)\r\n        self.mask = pygame.mask.from_surface(self.image)\r\n        self.x1motoin = \"n\"\r\n        self.x2motoin = \"n\"\r\n        self.vx = 0\r\n        self.vy = 5\r\n        self.v = 5\r\n        self.x = x\r\n        self.y = y\r\n        self.screen_size = size\r\n        self.jump_max = 20\r\n        self.jump_count = 0\r\n        self.max_hp = 100\r\n        self.hp = 100\r\n        self.sc = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)\r\n        self.screen = screen\r\n        self.running = True\r\n\r\n    def show_hp(self):\r\n        pygame.draw.rect(self.sc, \"grey\", (\r\n            0.0145 * self.screen_size[0], self.screen_size[1] - 0.0712 * self.screen_size[1],\r\n            0.15835 * self.screen_size[0],\r\n            0.0315 * self.screen_size[1]))\r\n        pygame.draw.rect(self.sc, \"green\", (\r\n        0.0152 * self.screen_size[0], self.screen_size[1] - 0.06929 * self.screen_size[1], 3 * self.hp,\r\n        0.015625 * self.screen_size[0]))\r\n        pygame.draw.rect(self.sc, \"red\", (\r\n            0.0152 * self.screen_size[0] + 3 * self.hp, self.screen_size[1] - 0.06929 * self.screen_size[1],\r\n            3 * (self.max_hp - self.hp), 0.015625 * self.screen_size[0]))\r\n        self.screen.blit(self.sc, (0, 0))\r\n\r\n    def death(self):\r\n        self.running = False\r\n\r\n    def upd(self, jump, fall, objects, thorns, floor):\r\n        a = False\r\n        if self.x1motoin == \"y\" and self.x2motoin == \"y\":\r\n            self.vx = 0\r\n        elif self.x1motoin == \"y\":\r\n            self.vx = self.v\r\n            self.image = pygame.transform.scale(Player.image1, (self.radius, 2.25 * self.radius))\r\n        elif self.x2motoin == \"y\":\r\n            self.vx = -self.v\r\n            self.image = pygame.transform.scale(Player.image2, (self.radius, 2.25 * self.radius))\r\n        else:\r\n            self.vx = 0\r\n        if jump:\r\n            self.vy = -self.jump_count\r\n            if self.jump_count > 0 and not pygame.sprite.spritecollideany(self,\r\n                                                                          floor) and not pygame.sprite.spritecollideany(\r\n                self, objects):\r\n                self.jump_count -= 1\r\n            elif not pygame.sprite.spritecollideany(self, floor) and not pygame.sprite.spritecollideany(self, objects):\r\n                jump = False\r\n            elif pygame.sprite.spritecollideany(self, floor) and pygame.sprite.spritecollideany(self, objects):\r\n                jump = False\r\n                self.jump_count = 0\r\n                self.vy = 0\r\n        elif fall and self.jump_count <= 0:\r\n            if not pygame.sprite.spritecollideany(self, floor) and pygame.sprite.spritecollideany(self, objects):\r\n                self.jump_count -= 2\r\n                self.vy = -self.jump_count\r\n            elif not pygame.sprite.spritecollideany(self, floor) and not pygame.sprite.spritecollideany(self, objects):\r\n                fall = False\r\n                self.vy = -self.jump_count\r\n                self.jump_count = self.vy\r\n            elif pygame.sprite.spritecollideany(self, floor):\r\n                fall = False\r\n                self.vy = 0\r\n        else:\r\n            self.jump = False\r\n            fall = False\r\n            self.vy = self.jump_count if self.jump_count != 0 else self.vy\r\n            self.jump_count += 1\r\n            if pygame.sprite.spritecollideany(self, floor) or pygame.sprite.spritecollideany(self, objects):\r\n                self.vy = 0\r\n                self.jump_count = 0\r\n        if pygame.sprite.spritecollideany(self, thorns):\r\n            if self.x1motoin == \"y\":\r\n                self.rect = self.rect.move(-self.v * 15, 0)\r\n            if self.x2motoin == \"y\":\r\n                self.rect = self.rect.move(self.v * 15, 0)\r\n            self.hp -= 10\r\n            a = True\r\n        if not a:\r\n            self.rect = self.rect.move(self.vx, self.vy)\r\n        if self.hp == 0:\r\n            self.death()\r\n        return (jump, fall)\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/classPlayer.py b/classPlayer.py
+--- a/classPlayer.py	(revision 39fab1952f818d0cb46c2a29c6eba4beff10b199)
++++ b/classPlayer.py	(date 1705696053802)
+@@ -4,13 +4,13 @@
+ 
+ 
+ class Player(pygame.sprite.Sprite):
+-    image1 = load_image("player3.png", -1)
++    image1 = load_image("player31.png", -1)
+     image2 = pygame.transform.flip(image1, True, False)
+ 
+     def __init__(self, x, y, all_sprites, size, screen):
+         super().__init__(all_sprites)
+-        self.radius = radius = 75
+-        self.image = pygame.transform.scale(Player.image1, (radius, 2.25 * radius))
++        self.radius = radius = 0.07 * size[1]
++        self.image = pygame.transform.scale(Player.image1, (radius, 2.1 * radius))
+         self.rect = self.image.get_rect().move(x, y)
+         self.mask = pygame.mask.from_surface(self.image)
+         self.x1motoin = "n"
+@@ -30,20 +30,21 @@
+         self.running = True
+ 
+     def show_hp(self):
+-        pygame.draw.rect(self.sc, "grey", (
+-            0.0145 * self.screen_size[0], self.screen_size[1] - 0.0712 * self.screen_size[1],
+-            0.15835 * self.screen_size[0],
+-            0.0315 * self.screen_size[1]))
+-        pygame.draw.rect(self.sc, "green", (
++        # pygame.draw.rect(self.sc, "gray", (
++        #     0.0145 * self.screen_size[0], self.screen_size[1] - 0.0712 * self.screen_size[1],
++        #     0.15835 * self.screen_size[0],
++        #     0.0315 * self.screen_size[1]))
++        pygame.draw.rect(self.sc, "red", (
+         0.0152 * self.screen_size[0], self.screen_size[1] - 0.06929 * self.screen_size[1], 3 * self.hp,
+         0.015625 * self.screen_size[0]))
+-        pygame.draw.rect(self.sc, "red", (
++        pygame.draw.rect(self.sc, "black", (
+             0.0152 * self.screen_size[0] + 3 * self.hp, self.screen_size[1] - 0.06929 * self.screen_size[1],
+             3 * (self.max_hp - self.hp), 0.015625 * self.screen_size[0]))
+         self.screen.blit(self.sc, (0, 0))
+ 
+     def death(self):
+-        self.running = False
++        pass
++        # self.running = False
+ 
+     def upd(self, jump, fall, objects, thorns, floor):
+         a = False
+@@ -51,10 +52,10 @@
+             self.vx = 0
+         elif self.x1motoin == "y":
+             self.vx = self.v
+-            self.image = pygame.transform.scale(Player.image1, (self.radius, 2.25 * self.radius))
++            self.image = pygame.transform.scale(Player.image1, (self.radius, 2.1 * self.radius))
+         elif self.x2motoin == "y":
+             self.vx = -self.v
+-            self.image = pygame.transform.scale(Player.image2, (self.radius, 2.25 * self.radius))
++            self.image = pygame.transform.scale(Player.image2, (self.radius, 2.1 * self.radius))
+         else:
+             self.vx = 0
+         if jump:
+@@ -89,10 +90,24 @@
+                 self.vy = 0
+                 self.jump_count = 0
+         if pygame.sprite.spritecollideany(self, thorns):
+-            if self.x1motoin == "y":
+-                self.rect = self.rect.move(-self.v * 15, 0)
+-            if self.x2motoin == "y":
+-                self.rect = self.rect.move(self.v * 15, 0)
++            for thorn in thorns:
++                if self.rect.colliderect(thorn.rect):
++                    if thorn.rect.x + thorn.rect.w // 2 <= self.rect.x + self.rect.w // 2:
++                        self.rect.x += 50
++                        self.rect.y -= 40
++                        self.vx = 0
++                    else:
++                        self.rect.x -= 50
++                        self.rect.y -= 40
++                        self.vx = 0
++        #     if self.x1motoin == "y":
++        #         self.rect = self.rect.move(-self.v * 23, -self.v * 5)
++        #     if self.x2motoin == "y":
++        #         self.rect = self.rect.move(self.v * 23, -self.v * 5)
++        #     if self.x1motoin != "y" and self.x2motoin != "y":
++        #         self.rect = self.rect.move(-self.v * 23, -self.v * 5)
++            # if fall:
++            #     self.rect = self.rect.move(self.v * 15, 0)
+             self.hp -= 10
+             a = True
+         if not a:
+Index: classMainFloor.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import pygame\r\n\r\nclass MainFloor(pygame.sprite.Sprite):\r\n    def __init__(self, size, group):\r\n        super().__init__(group)\r\n        self.image = pygame.Surface((size[0], 0.1 * size[1]), pygame.SRCALPHA, 32)\r\n        pygame.draw.rect(self.image, pygame.Color(\"white\"), (0, 0, size[0], size[1]))\r\n        self.rect = pygame.Rect(0, 0.9 * size[1], size[0], size[1])\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/classMainFloor.py b/classMainFloor.py
+--- a/classMainFloor.py	(revision 39fab1952f818d0cb46c2a29c6eba4beff10b199)
++++ b/classMainFloor.py	(date 1705696053812)
+@@ -4,5 +4,5 @@
+     def __init__(self, size, group):
+         super().__init__(group)
+         self.image = pygame.Surface((size[0], 0.1 * size[1]), pygame.SRCALPHA, 32)
+-        pygame.draw.rect(self.image, pygame.Color("white"), (0, 0, size[0], size[1]))
++        pygame.draw.rect(self.image, pygame.Color("#131313"), (0, 0, size[0], size[1]))
+         self.rect = pygame.Rect(0, 0.9 * size[1], size[0], size[1])
+Index: main.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import pygame\r\n\r\nfrom libraryImages import load_image\r\n\r\npygame.init()\r\nscreen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)\r\nw, h = screen.get_size()\r\nscreen_start = pygame.display.set_mode((0.5 * w, 0.5 * h))\r\nall_units = pygame.sprite.Group()\r\nfloor = pygame.sprite.Group()\r\nobjects = pygame.sprite.Group()\r\nthorns = pygame.sprite.Group()\r\n\r\nfrom classPlayer import Player\r\nfrom classEnemy import Enemy\r\nfrom classMainFloor import MainFloor\r\nfrom classBlock import Block\r\nfrom classThorns import Thorns\r\n\r\nrun= True\r\nwhile run:\r\n    screen_start.fill(\"white\")\r\n    for event in pygame.event.get():\r\n        if event.type == pygame.QUIT:\r\n            exit()\r\n        if event.type == pygame.MOUSEBUTTONDOWN:\r\n            run = False\r\n    pygame.display.flip()\r\nMainFloor((w, h), floor)\r\nBlock(0.2 * w, 1, w, h, objects)\r\nBlock(0.2 * w, 2, w, h, objects)\r\nThorns(0.2 * w, 1, w, h, thorns)\r\nplayer = Player(0.5 * w, 0.8 * h, all_units, (w, h), screen)\r\nEnemy(0.8 * w, 0.7 * h, all_units)\r\nclock = pygame.time.Clock()\r\njump = False\r\nf = False\r\nfall = False\r\nmotion = \"\"\r\nscreen_image = pygame.transform.scale(load_image(\"screen2.png\"), (w, h))\r\n\r\nrunning = True\r\nwhile running:\r\n    while player.running:\r\n        screen.fill((50, 50, 50))\r\n        for event in pygame.event.get():\r\n            if event.type == pygame.QUIT:\r\n                player.running = False\r\n            if event.type == pygame.KEYDOWN:\r\n                if event.key == pygame.K_d:\r\n                    player.x1motoin = \"y\"\r\n                if event.key == pygame.K_a:\r\n                    player.x2motoin = \"y\"\r\n                if (event.key == pygame.K_w or event.key == pygame.K_SPACE) and not jump and not f and not fall and player.jump_count == 0:\r\n                    jump = True\r\n                    player.jump_count = player.jump_max\r\n                if event.key == pygame.K_LSHIFT:\r\n                    player.v *= 2\r\n                if event.key == pygame.K_s:\r\n                    f = True\r\n                if event.key == pygame.K_SPACE and f:\r\n                    fall = True\r\n                    player.jump_count = -player.jump_max\r\n            if event.type == pygame.KEYUP:\r\n                if event.key == pygame.K_d:\r\n                    player.x1motoin = \"n\"\r\n                if event.key == pygame.K_a:\r\n                    player.x2motoin = \"n\"\r\n                if event.key == pygame.K_LSHIFT:\r\n                    player.v /= 2\r\n                if event.key == pygame.K_s:\r\n                    f = False\r\n        if player.rect.x < 0.3 * w:\r\n            player.rect = player.rect.move(-player.vx, 0)\r\n            objects.update(\"r\", player.v)\r\n            thorns.update(\"r\", player.v)\r\n            motion = \"r\"\r\n        elif player.rect.x + player.radius > 0.7 * w:\r\n            player.rect = player.rect.move(-player.vx, 0)\r\n            objects.update(\"l\", player.v)\r\n            thorns.update(\"l\", player.v)\r\n            motion = \"l\"\r\n        else:\r\n            motion = \"\"\r\n        jump, fall = player.upd(jump, fall, objects, thorns, floor)\r\n        screen.blit(screen_image, (0, 0))\r\n        objects.draw(screen)\r\n        thorns.draw(screen)\r\n        floor.draw(screen)\r\n        all_units.update(floor, objects, motion)\r\n        all_units.draw(screen)\r\n        player.show_hp()\r\n        clock.tick(120)\r\n        pygame.display.flip()\r\n    running = False\r\npygame.quit()\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/main.py b/main.py
+--- a/main.py	(revision 39fab1952f818d0cb46c2a29c6eba4beff10b199)
++++ b/main.py	(date 1705696053821)
+@@ -17,7 +17,7 @@
+ from classBlock import Block
+ from classThorns import Thorns
+ 
+-run= True
++run = True
+ while run:
+     screen_start.fill("white")
+     for event in pygame.event.get():
+@@ -29,15 +29,15 @@
+ MainFloor((w, h), floor)
+ Block(0.2 * w, 1, w, h, objects)
+ Block(0.2 * w, 2, w, h, objects)
+-Thorns(0.2 * w, 1, w, h, thorns)
++Thorns(0.7 * w, 1, w, h, thorns)
+ player = Player(0.5 * w, 0.8 * h, all_units, (w, h), screen)
+-Enemy(0.8 * w, 0.7 * h, all_units)
++Enemy(0.8 * w, 0.7 * h, all_units, (w, h))
+ clock = pygame.time.Clock()
+ jump = False
+ f = False
+ fall = False
+ motion = ""
+-screen_image = pygame.transform.scale(load_image("screen2.png"), (w, h))
++screen_image = pygame.transform.scale(load_image("screen.jpg"), (w, h))
+ 
+ running = True
+ while running:
+Index: classThorns.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import pygame\r\n\r\nfrom libraryImages import load_image\r\n\r\nclass Thorns(pygame.sprite.Sprite):\r\n    image = load_image('thorns.png')\r\n    def __init__(self, x, coord, w, h, group):\r\n        super().__init__(group)\r\n        coords = {1: 0.86 * h, 2: 0.46 * h}\r\n        self.image = pygame.transform.scale(Thorns.image, (0.03 * w, 0.04 * h))\r\n        self.mask = pygame.mask.from_surface(self.image)\r\n        self.rect = self.image.get_rect().move(x, coords[coord])\r\n\r\n    def update(self, motion, speed):\r\n        if motion == \"r\":\r\n            self.rect = self.rect.move(speed, 0)\r\n        else:\r\n            self.rect = self.rect.move(-speed, 0)\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/classThorns.py b/classThorns.py
+--- a/classThorns.py	(revision 39fab1952f818d0cb46c2a29c6eba4beff10b199)
++++ b/classThorns.py	(date 1705696053831)
+@@ -3,11 +3,11 @@
+ from libraryImages import load_image
+ 
+ class Thorns(pygame.sprite.Sprite):
+-    image = load_image('thorns.png')
++    image = load_image('thorns2.png')
+     def __init__(self, x, coord, w, h, group):
+         super().__init__(group)
+-        coords = {1: 0.86 * h, 2: 0.46 * h}
+-        self.image = pygame.transform.scale(Thorns.image, (0.03 * w, 0.04 * h))
++        coords = {1: 0.83 * h, 2: 0.46 * h}
++        self.image = pygame.transform.scale(Thorns.image, (0.07 * w, 0.08 * h))
+         self.mask = pygame.mask.from_surface(self.image)
+         self.rect = self.image.get_rect().move(x, coords[coord])
+ 
+Index: classEnemy.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import pygame\r\n\r\nfrom libraryImages import load_image\r\n\r\nclass Enemy(pygame.sprite.Sprite):\r\n    image = load_image(\"enemy.png\")\r\n\r\n    def __init__(self, x, y, group):\r\n        super().__init__(group)\r\n        self.image = pygame.transform.scale(Enemy.image, (100, 150))\r\n        self.rect = self.image.get_rect().move(x, y)\r\n        self.mask = pygame.mask.from_surface(self.image)\r\n        self.vx = 0\r\n        self.vy = 5\r\n        self.v = 5\r\n\r\n    def update(self, floor, objects, motion):\r\n        if motion == \"r\":\r\n            self.rect = self.rect.move(5, 0)\r\n        elif motion == \"l\":\r\n            self.rect = self.rect.move(-5, 0)\r\n        # self.rect.x += self.vx\r\n        self.rect.y += self.vy\r\n        if pygame.sprite.spritecollideany(self, floor) or pygame.sprite.spritecollideany(self, objects):\r\n            self.vy = 0\r\n            self.jump_count = 0\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/classEnemy.py b/classEnemy.py
+--- a/classEnemy.py	(revision 39fab1952f818d0cb46c2a29c6eba4beff10b199)
++++ b/classEnemy.py	(date 1705696053841)
+@@ -3,11 +3,12 @@
+ from libraryImages import load_image
+ 
+ class Enemy(pygame.sprite.Sprite):
+-    image = load_image("enemy.png")
++    image = load_image("player41.png")
+ 
+-    def __init__(self, x, y, group):
++    def __init__(self, x, y, group, size):
+         super().__init__(group)
+-        self.image = pygame.transform.scale(Enemy.image, (100, 150))
++        self.radius = radius = 0.07 * size[1]
++        self.image = pygame.transform.scale(Enemy.image, (radius, 2.1 * radius))
+         self.rect = self.image.get_rect().move(x, y)
+         self.mask = pygame.mask.from_surface(self.image)
+         self.vx = 0
+Index: classBlock.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import pygame\r\n\r\nfrom libraryImages import load_image\r\n\r\nclass Block(pygame.sprite.Sprite):\r\n    image = load_image('block.png')\r\n    def __init__(self, x, coord, w, h, group):\r\n        super().__init__(group)\r\n        coords = {1: 0.6 * h, 2: 0.3 * h}\r\n        self.image = pygame.transform.scale(Block.image, (0.1 * w, 0.03 * h))\r\n        self.mask = pygame.mask.from_surface(self.image)\r\n        self.rect = self.image.get_rect().move(x, coords[coord])\r\n\r\n    def update(self, motion, speed):\r\n        if motion == \"r\":\r\n            self.rect = self.rect.move(speed, 0)\r\n        else:\r\n            self.rect = self.rect.move(-speed, 0)\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/classBlock.py b/classBlock.py
+--- a/classBlock.py	(revision 39fab1952f818d0cb46c2a29c6eba4beff10b199)
++++ b/classBlock.py	(date 1705696053851)
+@@ -3,13 +3,14 @@
+ from libraryImages import load_image
+ 
+ class Block(pygame.sprite.Sprite):
+-    image = load_image('block.png')
+-    def __init__(self, x, coord, w, h, group):
++    image = load_image('block2.png')
++    def __init__(self,x, coord, w, h, group):
+         super().__init__(group)
+-        coords = {1: 0.6 * h, 2: 0.3 * h}
+-        self.image = pygame.transform.scale(Block.image, (0.1 * w, 0.03 * h))
++        coords = {1: 0.6 * h, 2: 0.25 * h}
++        self.image = pygame.transform.scale(Block.image, (0.15 * w, 0.08 * h))
+         self.mask = pygame.mask.from_surface(self.image)
+-        self.rect = self.image.get_rect().move(x, coords[coord])
++        self.rectt = self.image.get_rect().move(x, coords[coord])
++        self.rect = pygame.Rect((x, coords[coord] + 0.08 * h), (0.15 * w, 10))
+ 
+     def update(self, motion, speed):
+         if motion == "r":
+Index: libraryImages.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import os\r\nimport sys\r\n\r\nimport pygame\r\n\r\ndef load_image(name, colorkey=None):\r\n    fullname = os.path.join('data', name)\r\n    if not os.path.isfile(fullname):\r\n        print(f\"Файл с изображением '{fullname}' не найден\")\r\n        sys.exit()\r\n    image = pygame.image.load(fullname)\r\n    if colorkey is not None:\r\n        image = image.convert()\r\n        if colorkey == -1:\r\n            colorkey = image.get_at((0, 0))\r\n        image.set_colorkey(colorkey)\r\n    else:\r\n        image = image.convert_alpha()\r\n    return image\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/libraryImages.py b/libraryImages.py
+--- a/libraryImages.py	(revision 39fab1952f818d0cb46c2a29c6eba4beff10b199)
++++ b/libraryImages.py	(date 1705696053860)
+@@ -9,11 +9,11 @@
+         print(f"Файл с изображением '{fullname}' не найден")
+         sys.exit()
+     image = pygame.image.load(fullname)
+-    if colorkey is not None:
+-        image = image.convert()
+-        if colorkey == -1:
+-            colorkey = image.get_at((0, 0))
+-        image.set_colorkey(colorkey)
+-    else:
+-        image = image.convert_alpha()
++    # if colorkey is not None:
++    #     image = image.convert()
++    #     if colorkey == -1:
++    #         colorkey = image.get_at((0, 0))
++    #     image.set_colorkey(colorkey)
++    # else:
++    #     image = image.convert_alpha()
+     return image
