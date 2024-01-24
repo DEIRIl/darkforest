@@ -17,7 +17,7 @@ class Arrow(pygame.sprite.Sprite):
         self.rect = self.image.get_rect().move(x, y)
         self.minus_hp = 15
 
-    def update(self, motion, speed):
+    def update(self, motion, speed, objects):
         if motion == "r":
             self.rect = self.rect.move(speed, 0)
         elif motion == "l":
@@ -45,7 +45,7 @@ class Branch(pygame.sprite.Sprite):
         self.time = 11
 
 
-    def update(self, motion, speed):
+    def update(self, motion, speed, objects):
         if motion == "r":
             self.rect = self.rect.move(speed, 0)
         elif motion == "l":
@@ -56,6 +56,8 @@ class Branch(pygame.sprite.Sprite):
         else:
             self.time += 1
         if self.time >= 301:
+            self.kill()
+        if pygame.sprite.spritecollideany(self, objects):
             self.kill()
 
 

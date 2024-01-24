@@ -16,7 +16,7 @@ thorns = pygame.sprite.Group()
 bullets = pygame.sprite.Group()
 player_bullets = pygame.sprite.Group()
 heals = pygame.sprite.Group()
-books = pygame.sprite.Group()
+others = pygame.sprite.Group()
 
 from classPlayer import Player
 from classBullet import Flame
@@ -25,7 +25,7 @@ from classMainFloor import MainFloor
 from classBlock import Block
 from classThorns import Thorns
 from classHeal import LittleHeal, BigHeal
-from Levels import training_level
+from Levels import training_level, first_level
 from classButton import Button, obj
 
 start_frames = []
@@ -107,6 +107,12 @@ the_first_download = False
 
 running = True
 while running:
+    if level == 0:
+        pygame.mixer.music.load("data\music_for_training_level.mp3")
+        pygame.mixer.music.play(-1)
+    elif level == 1:
+        pygame.mixer.music.load("data\music_for_first_level.mp3")
+        pygame.mixer.music.play(-1)
     next_level = False
     screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
     screen.fill((50, 50, 50))
@@ -115,11 +121,6 @@ while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT or next_level:
                 player.running = False
-                player.vx = 0
-                player.v = 10
-                player.rect.x = 0.5 * w
-                player.rect.y = 0.8 * h
-                x = 0
                 for it in bullets:
                     it.kill()
                 bullets.clear(screen, pygame.Surface((w, h)))
@@ -136,6 +137,9 @@ while running:
                     it.kill()
                 thorns.clear(screen, pygame.Surface((w, h)))
                 the_first_download = False
+                jump = False
+                f = False
+                fall = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_d:
                     player.x1motoin = "y"
@@ -165,7 +169,13 @@ while running:
         if player.rect.x < 0.45 * w:
             motion = "r"
             player.rect = player.rect.move(player.v, 0)
-            x += player.v
+            if x < 0:
+                x += player.v
+            else:
+                motion = ""
+                player.rect = player.rect.move(-player.v, 0)
+                if player.rect.x - player.rect. w < 0:
+                    player.rest()
         elif player.rect.x + player.radius > 0.55 * w:
             motion = "l"
             player.rect = player.rect.move(-player.v, 0)
@@ -177,14 +187,21 @@ while running:
         screen.blit(screen_image, (0, 0))
         if level == 0:
             screen.fill((50, 50, 50))
-            level_passed = training_level(screen, w, h, x, objects, thorns, all_enemy, heals, player, books, the_first_download)
+            level_passed = training_level(screen, w, h, x, objects, thorns, all_enemy, heals, player, others,
+                                          the_first_download)
+            the_first_download = True
+            if level_passed:
+                next_level = True
+        elif level == 1:
+            screen.fill((50, 50, 50))
+            level_passed = first_level(screen, w, h, x, objects, thorns, all_enemy, heals, player, others, the_first_download)
             the_first_download = True
             if level_passed:
                 next_level = True
         # screen.blit(screen2, (0, 0))
         objects.draw(screen)
         thorns.draw(screen)
-        bullets.update(motion, player.v)
+        bullets.update(motion, player.v, objects)
         player_bullets.update(motion, player.v)
         objects.update(motion, player.v)
         thorns.update(motion, player.v)
@@ -192,8 +209,9 @@ while running:
         bullets.draw(screen)
         player_bullets.draw(screen)
         heals.draw(screen)
-        floor.draw(screen)
-        books.draw(screen)
+        if level == 0:
+            floor.draw(screen)
+        others.draw(screen)
         all_enemy.update(floor, objects, motion, player, bullets, player_bullets)
         all_enemy.draw(screen)
         all_units.draw(screen)
@@ -205,19 +223,63 @@ while running:
     r = 0.5
     y = -r
     f = True
+    x = 0
     mission_passed = pygame.transform.scale(load_image("mission_passed.png"), (410, 141))
     mission_failed = pygame.transform.scale(load_image("mission_failed.png"), (410, 141))
+    pygame.mixer.music.stop()
 
 
     def retry():
-        global run
+        global run, x, the_first_download, jump, f, fall
         run = False
+        x = 0
+        for it in bullets:
+            it.kill()
+        bullets.clear(screen, pygame.Surface((w, h)))
+        for it in heals:
+            it.kill()
+        heals.clear(screen, pygame.Surface((w, h)))
+        for it in all_enemy:
+            it.kill()
+        all_enemy.clear(screen, pygame.Surface((w, h)))
+        for it in objects:
+            it.kill()
+        objects.clear(screen, pygame.Surface((w, h)))
+        for it in thorns:
+            it.kill()
+        thorns.clear(screen, pygame.Surface((w, h)))
+        the_first_download = False
+        jump = False
+        f = False
+        fall = False
+        player.rest()
 
 
     def next_lvl():
-        global run, level
+        global run, level, x, the_first_download, jump, f, fall
         run = False
         level += 1
+        player.rest()
+        x = 0
+        for it in bullets:
+            it.kill()
+        bullets.clear(screen, pygame.Surface((w, h)))
+        for it in heals:
+            it.kill()
+        heals.clear(screen, pygame.Surface((w, h)))
+        for it in all_enemy:
+            it.kill()
+        all_enemy.clear(screen, pygame.Surface((w, h)))
+        for it in objects:
+            it.kill()
+        objects.clear(screen, pygame.Surface((w, h)))
+        for it in thorns:
+            it.kill()
+        thorns.clear(screen, pygame.Surface((w, h)))
+        the_first_download = False
+        jump = False
+        f = False
+        fall = False
         with open("curr_level.txt", "w") as c:
             c.write(str(level))
 
@@ -236,6 +298,8 @@ while running:
         Button(195, 290, 375, 100, 'Сохраниться', save_level)
         Button(10, 420, 375, 100, 'Заново', retry)
         Button(390, 420, 375, 100, 'Следующий уровень', next_lvl)
+    pygame.mixer.music.load("data/music_for_finish_window.mp3")
+    pygame.mixer.music.play(-1)
     while run:
         screen.fill("black")
         screen.blit(finish_frames[0], (y * 0.2 - 30, 0))
@@ -282,6 +346,7 @@ while running:
         cl.tick(60)
         pygame.display.flip()
     obj.clear()
+    pygame.mixer.music.stop()
 f = open("curr_level.txt", "w")
 f.write("0")
 f.close()

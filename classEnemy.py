@@ -42,7 +42,7 @@ class StandartEnemy(pygame.sprite.Sprite):
         elif motion == "l":
             self.rect = self.rect.move(-player.v, 0)
         self.rect.y += self.vy
-        if pygame.sprite.spritecollideany(self, objects):
+        if pygame.sprite.spritecollideany(self, objects) or pygame.sprite.spritecollideany(self, floor):
             if ((self.rect.x - player.rect.x) ** 2 + (self.rect.y - player.rect.y) ** 2) ** 0.5 <= 0.3 * self.size[0]:
                 if self.Ttime >= 200:
                     self.Ttime = 0
@@ -86,6 +86,7 @@ class NoBulletEnemy(StandartEnemy):
         self.cut_sheet(NoBulletEnemy.image, 8, 3)
         self.cur_frame = 16
         self.stop = False
+        self.hit_time = 0
         super().__init__(x, y, group, size, (self.frames[self.cur_frame], (0.055 * size[0], 0.06 * size[1])))
 
     def cut_sheet(self, sheet, columns, rows):
@@ -111,6 +112,11 @@ class NoBulletEnemy(StandartEnemy):
         elif motion == "l":
             self.rect = self.rect.move(-player.v, 0)
         self.rect.y += self.vy
+        if self.rect.colliderect(player) and self.hit_time >= 50:
+            player.hp -= 5
+            self.hit_time = 0
+        else:
+            self.hit_time += 1
         if self.stop:
             self.cur_frame = 16
         elif self.vx <= 0:
@@ -118,7 +124,7 @@ class NoBulletEnemy(StandartEnemy):
         elif self.vx >= 0:
             self.cur_frame = 8
         self.image = self.frames[self.cur_frame]
-        if pygame.sprite.spritecollideany(self, objects):
+        if pygame.sprite.spritecollideany(self, objects) or pygame.sprite.spritecollideany(self, floor):
             self.vy = 0
             self.rect.x += self.vx
             self.stop = False
@@ -200,7 +206,7 @@ class NoMovementEnemy(StandartEnemy):
                 if self.Ttime >= 300:
                     self.Ttime = 0
                     self.cur_frame = 4
-                    Branch(self.rect.x, self.rect.y, *self.size, bullets, (player.rect.x, player.rect.y))
+                    Branch(self.rect.x, self.rect.y, *self.size, bullets, (player.rect.x + player.rect.w // 2, player.rect.y))
                 else:
                     self.Ttime += 1
                 self.vy = 0

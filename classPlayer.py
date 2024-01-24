@@ -45,6 +45,7 @@ class Player(pygame.sprite.Sprite):
         self.curr_attack_frame = 0
         self.leftdv = False
         self.one_damage = False
+        self.have_damage_tick = 0
 
     def cut_sheet(self, sheet, columns, rows):
         self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
@@ -71,6 +72,29 @@ class Player(pygame.sprite.Sprite):
     def death(self):
         self.running = False
 
+    def rest(self):
+        self.rect.x = self.x
+        self.rect.y = self.y
+        self.x1motoin = "n"
+        self.x2motoin = "n"
+        self.vx = 0
+        self.vy = 5
+        self.v = 10
+        self.jump_max = 22
+        self.jump_count = 0
+        self.max_hp = 100
+        self.hp = 100
+        self.sc = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+        self.running = True
+        self.attack = 12
+        self.attack_time = 5
+        self.curr_attack_frame = 0
+        self.leftdv = False
+        self.one_damage = False
+        self.have_damage_tick = 0
+        self.running = True
+
+
     def upd(self, jump, fall, objects, thorns, floor, bullets, heals, attack, enemys, player_bullets):
         a = False
         if attack:
@@ -92,7 +116,6 @@ class Player(pygame.sprite.Sprite):
                 self.one_damage = True
                 for enemy in enemys:
                     if self.rect.colliderect(enemy):
-                        print(enemy.hp)
                         enemy.hp -= self.attack
                         if enemy.hp <= 0:
                             enemy.kill()
@@ -184,12 +207,16 @@ class Player(pygame.sprite.Sprite):
                 #         self.rect = self.rect.move(-self.v * 23, -self.v * 5)
                 # if fall:
                 #     self.rect = self.rect.move(self.v * 15, 0)
-                self.hp -= 5
+                if self.have_damage_tick >= 10:
+                    self.hp -= 5
+                    self.have_damage_tick = 0
                 a = True
         if pygame.sprite.spritecollideany(self, bullets):
             for bullet in bullets:
                 if self.rect.colliderect(bullet.rect):
-                    self.hp -= bullet.minus_hp
+                    if self.have_damage_tick >= 10:
+                        self.hp -= bullet.minus_hp
+                        self.have_damage_tick = 0
                     bullet.kill()
         if pygame.sprite.spritecollideany(self, heals):
             for heal in heals:
@@ -203,4 +230,5 @@ class Player(pygame.sprite.Sprite):
         if self.hp <= 0:
             self.death()
             self.hp = 100
+        self.have_damage_tick += 1
         return (jump, fall, attack)
