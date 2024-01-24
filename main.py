@@ -61,10 +61,10 @@ y = 0
 r = 0.5
 f = True
 tt = 0
-Button(10, 260, 400, 100, 'Новая игра', new_game)
+Button(0.005 * w, 0.2407 * h, 0.2083 * w, 0.0925 * h, 'Новая игра', new_game)
 with open("save_level.txt") as c:
     if c.read():
-        Button(10, 380, 400, 100, 'Продолжить игру', continue_game)
+        Button(0.005 * w, 0.3518 * h, 0.2083 * w, 0.0925 * h, 'Продолжить игру', continue_game)
 pygame.mixer.music.play(-1, 5)
 while run:
     for event in pygame.event.get():
@@ -224,8 +224,8 @@ while running:
     y = -r
     f = True
     x = 0
-    mission_passed = pygame.transform.scale(load_image("mission_passed.png"), (410, 141))
-    mission_failed = pygame.transform.scale(load_image("mission_failed.png"), (410, 141))
+    mission_passed = pygame.transform.scale(load_image("mission_passed.png"), (0.2135 * w, 0.1305 * h))
+    mission_failed = pygame.transform.scale(load_image("mission_failed.png"), (0.2135 * w, 0.1305 * h))
     pygame.mixer.music.stop()
 
 
@@ -290,14 +290,14 @@ while running:
 
 
     if level == 0 and next_level:
-        Button(195, 290, 375, 100, 'Сохраниться', save_level)
-        Button(195, 420, 375, 100, 'Следующий уровень', next_lvl)
+        Button(0.1015625 * w, 0.2685 * h, 0.1953125 * w, 0.0925 * h, 'Сохраниться', save_level)
+        Button(0.1015625 * w, 0.3888 * h, 0.1953125 * w, 0.0925 * h, 'Следующий уровень', next_lvl)
     elif not next_level:
-        Button(195, 420, 375, 100, 'Заново', retry)
+        Button(0.1015625 * w, 0.3888 * h, 0.1953125 * w, 0.0925 * h, 'Заново', retry)
     elif level > 0 and next_level:
-        Button(195, 290, 375, 100, 'Сохраниться', save_level)
-        Button(10, 420, 375, 100, 'Заново', retry)
-        Button(390, 420, 375, 100, 'Следующий уровень', next_lvl)
+        Button(0.1015625 * w, 0.2685 * h, 0.1953125 * w, 0.0925 * h, 'Сохраниться', save_level)
+        Button(0.005 * w, 0.3888 * h, 0.1953125 * w, 0.0925 * h, 'Заново', retry)
+        Button(0.203125 * w, 0.3888 * h, 0.1953125 * w, 0.0925 * h, 'Следующий уровень', next_lvl)
     pygame.mixer.music.load("data/music_for_finish_window.mp3")
     pygame.mixer.music.play(-1)
     while run:
