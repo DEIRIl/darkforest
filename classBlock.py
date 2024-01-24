@@ -12,7 +12,7 @@ class Block(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(Block.image, (0.15 * w, 0.08 * h))
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect().move(x, coords[coord])
-        self.rect.h = 1
+        self.rect.h = 10
          # self.rect = pygame.Rect((x, coords[coord]), (0.1 * w, 1))
 
 
