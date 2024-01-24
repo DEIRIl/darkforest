@@ -14,8 +14,8 @@ class Button():
         self.onclickFunction = onclickFunction
 
         self.fillColors = {
-            'normal': pygame.transform.scale(load_image("floor_button.png"), (width, height)),
-            'hover': pygame.transform.scale(load_image("floor_button1.png"), (width, height)),
+            'hover': pygame.transform.scale(load_image("floor_button.png"), (width, height)),
+            'normal': pygame.transform.scale(load_image("floor_button1.png"), (width, height)),
             'pressed': pygame.transform.scale(load_image("floor_button2.png"), (width, height)),
         }
         self.buttonSurface = pygame.Surface((self.width, self.height))

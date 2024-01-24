@@ -32,32 +32,28 @@ start_frames = []
 for i in range(1, 7):
     im = f"start_screen/{i}.png"
     start_frames.append(pygame.transform.scale(load_image(im), (0.5 * w, 0.5 * h)))
+finish_frames = []
+for i in range(1, 8):
+    im = f"finish_screen/{i}.png"
+    finish_frames.append(pygame.transform.scale(load_image(im), (0.5 * w, 0.5 * h)))
 
 
 run = True
 level = 0
 
 
-def with_training():
+def new_game():
     global run, level
     run = False
     with open("curr_level.txt") as f:
         level = int(f.readline())
 
 
-def new_game():
-    global run, level
-    run = False
-    with open("save_level.txt", "w") as f:
-        f.write("0")
-        level = 0
-
-
-def without_training():
+def continue_game():
     global run, level
     run = False
     with open("save_level.txt") as f:
-        level = int(f.readline())
+        level = int(f.readline()) + 1
 
 
 cl = pygame.time.Clock()
@@ -65,11 +61,15 @@ y = 0
 r = 0.5
 f = True
 tt = 0
-Button(30, 120, 400, 100, 'Новая игра', new_game)
-Button(30, 230, 400, 100, 'Начать c обучения', with_training)
-Button(30, 340, 400, 100, 'Начать игру с сохранения', without_training)
+Button(10, 260, 400, 100, 'Новая игра', new_game)
+with open("save_level.txt") as c:
+    if c.read():
+        Button(10, 380, 400, 100, 'Продолжить игру', continue_game)
 pygame.mixer.music.play(-1, 5)
 while run:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            exit()
     screen.fill("black")
     screen.blit(start_frames[0], (0, 0))
     screen.blit(start_frames[1], (-y - 30, 0))
@@ -86,12 +86,10 @@ while run:
         f = True
     for object in obj:
         object.process(screen)
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            exit()
     cl.tick(60)
     pygame.display.flip()
 pygame.mixer.music.pause()
+obj.clear()
 
 MainFloor((w, h), floor)
 player = Player(0.5 * w, 0.8 * h, all_units, (w, h), screen)
@@ -202,17 +200,88 @@ while running:
         player.show_hp()
         clock.tick(120)
         pygame.display.flip()
-    screen = pygame.display.set_mode((0.5 * w, 0.5 * h))
+    screen = pygame.display.set_mode((0.5 * w - 180, 0.5 * h))
     run = True
+    r = 0.5
+    y = -r
+    f = True
+    mission_passed = pygame.transform.scale(load_image("mission_passed.png"), (410, 141))
+    mission_failed = pygame.transform.scale(load_image("mission_failed.png"), (410, 141))
+
+
+    def retry():
+        global run
+        run = False
+
+
+    def next_lvl():
+        global run, level
+        run = False
+        level += 1
+        with open("curr_level.txt", "w") as c:
+            c.write(str(level))
+
+
+    def save_level():
+        with open("save_level.txt", "w") as c:
+            c.write(str(level))
+
+
+    if level == 0 and next_level:
+        Button(195, 290, 375, 100, 'Сохраниться', save_level)
+        Button(195, 420, 375, 100, 'Следующий уровень', next_lvl)
+    elif not next_level:
+        Button(195, 420, 375, 100, 'Заново', retry)
+    elif level > 0 and next_level:
+        Button(195, 290, 375, 100, 'Сохраниться', save_level)
+        Button(10, 420, 375, 100, 'Заново', retry)
+        Button(390, 420, 375, 100, 'Следующий уровень', next_lvl)
     while run:
-        screen.blit(screen_finish_image, (0, 0))
+        screen.fill("black")
+        screen.blit(finish_frames[0], (y * 0.2 - 30, 0))
+        screen.blit(finish_frames[1], (y * 0.8 - 30, 0))
+        screen.blit(finish_frames[2], (y * 2 - 60, 0))
+        screen.blit(finish_frames[3], (y * 3 - 90, 0))
+        screen.blit(finish_frames[4], (y - 90, 0))
+        screen.blit(finish_frames[5], (0, 0))
+        screen.blit(finish_frames[6], (0, 0))
+        if level == 0 and next_level:
+            screen.blit(mission_passed, (0.15 * w - 105, 0))
+            font = pygame.font.SysFont('Arial', 40)
+            text = font.render("Поздравляю! Вы завершили обучение!", True, "white")
+            text1 = font.render("Успеха вам в тёмном лесу!", True, "white")
+            screen.blit(text, (0.04 * w, 0.13 * h))
+            screen.blit(text1, (0.04 * w, 0.175 * h))
+        elif not next_level:
+            screen.blit(mission_failed, (0.15 * w - 105, 0))
+            font = pygame.font.SysFont('Arial', 40)
+            if level == 0:
+                text = font.render("Сочувствую, вы провалили обучение(", True, "white")
+                screen.blit(text, (0.04 * w, 0.13 * h))
+            text1 = font.render("C такими навыками в Тёмный лес нельзя((", True, "white")
+            text2 = font.render("Попробуйте снова!", True, "white")
+            screen.blit(text1, (0.04 * w, 0.175 * h))
+            screen.blit(text2, (0.04 * w, 0.22 * h))
+        elif level > 0 and next_level:
+            screen.blit(mission_passed, (0.15 * w - 105, 0))
+        y += r
+        if y >= 30 and f:
+            r = -0.5
+            f = False
+        elif y <= -30 and not f:
+            r = 0.5
+            f = True
+        for object in obj:
+            object.process(screen)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
                 run = False
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                run = False
+            # if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            #     run = False
+        cl.tick(60)
         pygame.display.flip()
+    obj.clear()
 f = open("curr_level.txt", "w")
 f.write("0")
 f.close()
