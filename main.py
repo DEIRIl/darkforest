@@ -218,7 +218,7 @@ while running:
         player.show_hp()
         clock.tick(120)
         pygame.display.flip()
-    screen = pygame.display.set_mode((0.5 * w - 180, 0.5 * h))
+    screen = pygame.display.set_mode((0.5 * w - 60, 0.5 * h))
     run = True
     r = 0.5
     y = -r
@@ -311,14 +311,14 @@ while running:
         screen.blit(finish_frames[6], (0, 0))
         if level == 0 and next_level:
             screen.blit(mission_passed, (0.15 * w - 105, 0))
-            font = pygame.font.SysFont('Arial', 40)
+            font = pygame.font.SysFont('Arial', 30)
             text = font.render("Поздравляю! Вы завершили обучение!", True, "white")
             text1 = font.render("Успеха вам в тёмном лесу!", True, "white")
             screen.blit(text, (0.04 * w, 0.13 * h))
             screen.blit(text1, (0.04 * w, 0.175 * h))
         elif not next_level:
             screen.blit(mission_failed, (0.15 * w - 105, 0))
-            font = pygame.font.SysFont('Arial', 40)
+            font = pygame.font.SysFont('Arial', 30)
             if level == 0:
                 text = font.render("Сочувствую, вы провалили обучение(", True, "white")
                 screen.blit(text, (0.04 * w, 0.13 * h))

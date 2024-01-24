@@ -33,7 +33,7 @@ def training_level(screen, w, h, x, objects, thorns, all_enemy, heals, player, o
     screen.blit(text2, (1.3 * w + x, 0.4 * h))
     screen.blit(text3, (2.3 * w + x, 0.4 * h))
     screen.blit(text4, (3.3 * w + x, 0.4 * h))
-    screen.blit(text5, (4.5 * w + x, 0.4 * h))
+    screen.blit(text5, (5 * w + x, 0.4 * h))
     screen.blit(text6, (6 * w + x, 0.4 * h))
     screen.blit(text7, (7 * w + x, 0.4 * h))
     screen.blit(text8, (8.5 * w + x, 0.4 * h))
