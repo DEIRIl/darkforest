@@ -26,7 +26,7 @@ class StandartEnemy(pygame.sprite.Sprite):
 
     def show_hp(self):
         pygame.draw.rect(self.image, "black", (0, 0.01 * self.size[1], self.rect.w, 0.01 * self.size[1]))
-        pygame.draw.rect(self.image, "red", (0, 0.01 * self.size[1], self.rect.w * self.hp / 100, 0.01 * self.size[1]))
+        pygame.draw.rect(self.image, "red", (0, 0.01 * self.size[1], self.hp, 0.01 * self.size[1]))
 
     def update(self, floor, objects, motion, player, bullets, player_bullets):
         self.show_hp()

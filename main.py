@@ -25,7 +25,7 @@ from classMainFloor import MainFloor
 from classBlock import Block
 from classThorns import Thorns
 from classHeal import LittleHeal, BigHeal
-from Levels import training_level, first_level
+from Levels import training_level, first_level, second_level
 from classButton import Button, obj
 
 start_frames = []
@@ -176,7 +176,7 @@ while running:
                 player.rect = player.rect.move(-player.v, 0)
                 if player.rect.x - player.rect. w < 0:
                     player.rest()
-        elif player.rect.x + player.radius > 0.55 * w:
+        elif player.rect.x + player.radius > 0.55 * w and (level == 2 and x > -4400):
             motion = "l"
             player.rect = player.rect.move(-player.v, 0)
             x -= player.v
@@ -195,6 +195,12 @@ while running:
         elif level == 1:
             screen.fill((50, 50, 50))
             level_passed = first_level(screen, w, h, x, objects, thorns, all_enemy, heals, player, others, the_first_download)
+            the_first_download = True
+            if level_passed:
+                next_level = True
+        elif level == 2:
+            screen.fill((50, 50, 50))
+            level_passed = second_level(screen, w, h, x, objects, thorns, all_enemy, heals, player, others, the_first_download)
             the_first_download = True
             if level_passed:
                 next_level = True

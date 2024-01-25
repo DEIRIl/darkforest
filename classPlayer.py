@@ -5,20 +5,24 @@ from classBullet import Flame
 
 
 class Player(pygame.sprite.Sprite):
-    image = pygame.transform.scale(load_image("Idle.png"), (600, 150))
-    image1 = pygame.transform.scale(load_image("Jump.png"), (1100, 150))
-    image2 = pygame.transform.scale(load_image("Run.png"), (800, 150))
-    attack_image = pygame.transform.scale(load_image("Attack_3.png"), (1792, 150))
+    # image = pygame.transform.scale(load_image("Idle.png"), (600, 150))
+    # image1 = pygame.transform.scale(load_image("Jump.png"), (1100, 150))
+    # image2 = pygame.transform.scale(load_image("Run.png"), (800, 150))
+    # attack_image = pygame.transform.scale(load_image("Attack_3.png"), (1792, 150))
 
     def __init__(self, x, y, all_sprites, size, screen):
+        image = pygame.transform.scale(load_image("Idle.png"), (0.6 * size[1], 0.15 * size[1]))
+        image1 = pygame.transform.scale(load_image("Jump.png"), (1.1 * size[1], 0.15 * size[1]))
+        image2 = pygame.transform.scale(load_image("Run.png"), (0.8 * size[1], 0.15 * size[1]))
+        attack_image = pygame.transform.scale(load_image("Attack_3.png"), (1.8 * size[1], 0.15 * size[1]))
         super().__init__(all_sprites)
         self.frames = []
         self.frame_tick = 20
         self.frame_tick_idle = 0
-        self.cut_sheet(Player.image, 6, 1)
-        self.cut_sheet(Player.image1, 11, 1)
-        self.cut_sheet(Player.image2, 8, 1)
-        self.cut_sheet(Player.attack_image, 7, 1)
+        self.cut_sheet(image, 6, 1)
+        self.cut_sheet(image1, 11, 1)
+        self.cut_sheet(image2, 8, 1)
+        self.cut_sheet(attack_image, 7, 1)
         self.cur_frame = 0
         self.image = self.frames[self.cur_frame]
         self.cur_frame_idle = 1
