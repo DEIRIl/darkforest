@@ -176,7 +176,7 @@ while running:
                 player.rect = player.rect.move(-player.v, 0)
                 if player.rect.x - player.rect. w < 0:
                     player.rest()
-        elif player.rect.x + player.radius > 0.55 * w and (level == 2 and x > -4400):
+        elif player.rect.x + player.radius > 0.55 * w:
             motion = "l"
             player.rect = player.rect.move(-player.v, 0)
             x -= player.v
