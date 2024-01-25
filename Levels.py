@@ -193,6 +193,21 @@ def first_level(screen, w, h, x, objects, thorns, all_enemy, heals, player, othe
     return fin.x < player.x
 
 
+def second_level(screen, w, h, x, objects, thorns, all_enemy, heals, player, others, the_first_download):
+    screen.blit(level_two_background, (x, 0))
+    screen.blit(level_two_background, (3200 + x, 0))
+    screen.blit(coming_soon, (5000 + x, 300))
+    if not the_first_download:
+        Block(0.7 * w + x, 1, w, h, objects)
+        Block(0.7 * w + x, 2, w, h, objects)
+        Block(0.8 * w + x, 1, w, h, objects)
+        Block(0.8 * w + x, 2, w, h, objects)
+        Block(0.9 * w + x, 1, w, h, objects)
+        Block(0.9 * w + x, 2, w, h, objects)
+        StandartEnemy(0.8 * w + x, 0.4 * h, all_enemy, (w, h))
+        StandartEnemy(0.9 * w + x, 0.1 * h, all_enemy, (w, h))
+
+
 fin = None
 book = pygame.sprite.Sprite()
 portal = pygame.sprite.Sprite()
@@ -200,3 +215,5 @@ frames = []
 frame_tick = 0
 current_frame = 0
 first_level_frames = []
+level_two_background = pygame.transform.scale(load_image("screen_for_second_level.png"), (3200, 1080))
+coming_soon = load_image("coming_soon.png")
