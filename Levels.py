@@ -176,7 +176,7 @@ def first_level(screen, w, h, x, objects, thorns, all_enemy, heals, player, othe
         if frame_tick >= 10:
             frame_tick = 0
             current_frame = (current_frame + 1) % 8
-            portal.image = pygame.transform.flip(frames[current_frame], True, False)
+            portal.image = pygame.transform.flip(first_level_frames[current_frame], True, False)
         else:
             frame_tick += 1
         fin.x = 11.5 * w + x
